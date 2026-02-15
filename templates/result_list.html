@@ -1,0 +1,430 @@
+{% extends 'base.html' %}
+
+{% block title %}Results{% endblock %}
+
+{% block body %}
+<style>
+    body {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        min-height: 100vh;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .page-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .page-header {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .page-header h1 {
+        color: #4facfe;
+        margin: 0 0 0.5rem 0;
+        font-size: 2.5rem;
+    }
+
+    .filters {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .filter-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .filter-group select {
+        width: 100%;
+        padding: 0.8rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+    }
+
+    .results-section {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+    }
+
+    th:first-child {
+        border-top-left-radius: 10px;
+    }
+
+    th:last-child {
+        border-top-right-radius: 10px;
+    }
+
+    td {
+        padding: 1rem;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    tr:hover {
+        background: rgba(79, 172, 254, 0.1);
+    }
+
+    .grade-badge {
+        display: inline-block;
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .grade-a-plus {
+        background: #10b981;
+        color: white;
+    }
+
+    .grade-a {
+        background: #3b82f6;
+        color: white;
+    }
+
+    .grade-b-plus {
+        background: #8b5cf6;
+        color: white;
+    }
+
+    .grade-b {
+        background: #f59e0b;
+        color: white;
+    }
+
+    .grade-c {
+        background: #ef4444;
+        color: white;
+    }
+
+    .grade-d {
+        background: #991b1b;
+        color: white;
+    }
+
+    .grade-f {
+        background: #450a0a;
+        color: white;
+    }
+
+    .btn {
+        padding: 0.8rem 2rem;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-bottom: 1rem;
+        color: white;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        transition: all 0.3s;
+    }
+
+    .back-link:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .no-results {
+        text-align: center;
+        padding: 3rem;
+        color: #666;
+        font-size: 1.2rem;
+    }
+
+    /* Download PDF Section */
+    .download-section {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: 2px solid rgba(79, 172, 254, 0.3);
+    }
+
+    .download-section h2 {
+        color: #4facfe;
+        margin: 0 0 0.5rem 0;
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .download-section p {
+        color: #666;
+        margin: 0 0 1.5rem 0;
+        font-size: 0.95rem;
+    }
+
+    .download-form {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        align-items: flex-end;
+    }
+
+    .download-form .form-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .download-form .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #333;
+        font-size: 0.9rem;
+    }
+
+    .download-form .form-group select {
+        width: 100%;
+        padding: 0.8rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+    }
+
+    .download-form .form-group select:focus {
+        outline: none;
+        border-color: #4facfe;
+    }
+
+    .btn-download {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 0.8rem 2rem;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s;
+        white-space: nowrap;
+    }
+
+    .btn-download:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-download:disabled,
+    .btn-download.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+        pointer-events: none;
+    }
+
+    @media (max-width: 768px) {
+        table {
+            font-size: 0.9rem;
+        }
+
+        th,
+        td {
+            padding: 0.6rem;
+        }
+
+        .download-form {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="page-container">
+    <a href="{% url 'home' %}" class="back-link">&#8592; Back to Home</a>
+
+    <div class="page-header">
+        <h1>&#128202; Student Results</h1>
+        <p style="margin: 0; color: #666;">Verified examination results</p>
+    </div>
+
+    <!-- Download Result PDF Section -->
+    <div class="download-section">
+        <h2>📄 Download Result PDF</h2>
+        <p>Select a student and exam to generate a complete marksheet with all subject marks in one PDF</p>
+        <div class="download-form">
+            <div class="form-group">
+                <label for="pdf_student">👨‍🎓 Select Student</label>
+                <select id="pdf_student" onchange="updateDownloadBtn()">
+                    <option value="">-- Choose Student --</option>
+                    {% for s in students_with_results %}
+                    <option value="{{ s.id }}">{{ s.name }} — {{ s.student_class|default:"No Class" }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="pdf_exam">📝 Select Exam</label>
+                <select id="pdf_exam" onchange="updateDownloadBtn()">
+                    <option value="">-- Choose Exam --</option>
+                    {% for exam in exam_names %}
+                    <option value="{{ exam }}">{{ exam }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group" style="flex: 0; min-width: auto;">
+                <a href="#" id="downloadBtn" class="btn-download disabled" target="_blank">
+                    📄 Generate PDF
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="filters">
+        <form method="GET" style="display: contents;">
+            <div class="filter-group">
+                <label for="classfilter">Filter by Class</label>
+                <select name="class" id="classfilter" onchange="this.form.submit()">
+                    <option value="">All Classes</option>
+                    {% for cls in classes %}
+                    <option value="{{ cls.id }}" {% if selected_class == cls.id %}selected{% endif %}>
+                        {{ cls.class_name }} - {{ cls.section }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="examfilter">Filter by Exam</label>
+                <select name="exam" id="examfilter" onchange="this.form.submit()">
+                    <option value="">All Exams</option>
+                    {% for exam in exam_names %}
+                    <option value="{{ exam }}" {% if selected_exam == exam %}selected{% endif %}>
+                        {{ exam }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group" style="display: flex; align-items: flex-end;">
+                <a href="{% url 'result_list' %}" class="btn btn-primary">Clear Filters</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="results-section">
+        <h2 style="margin-top: 0; color: #4facfe;">Results ({{ results.count }})</h2>
+
+        {% if results %}
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Class</th>
+                        <th>Exam</th>
+                        <th>Subject</th>
+                        <th>Marks Obtained</th>
+                        <th>Total Marks</th>
+                        <th>Percentage</th>
+                        <th>Grade</th>
+                        <th>Exam Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results %}
+                    <tr>
+                        <td><strong>{{ result.student.name }}</strong></td>
+                        <td>{{ result.student.student_class }}</td>
+                        <td>{{ result.exam_name }}</td>
+                        <td>{{ result.subject.subject_name }}</td>
+                        <td>{{ result.marks_obtained }}</td>
+                        <td>{{ result.total_marks }}</td>
+                        <td><strong>{{ result.percentage|floatformat:2 }}%</strong></td>
+                        <td>
+                            <span class="grade-badge grade-{{ result.grade|lower|cut:'+' }}">
+                                {{ result.grade }}
+                            </span>
+                        </td>
+                        <td>{{ result.exam_date|date:"M d, Y" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-results">
+            <p>No results found matching your filters.</p>
+            <p style="font-size: 1rem; margin-top: 1rem;">Try adjusting the filters or check back later.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function updateDownloadBtn() {
+        const studentId = document.getElementById('pdf_student').value;
+        const examName = document.getElementById('pdf_exam').value;
+        const btn = document.getElementById('downloadBtn');
+
+        if (studentId && examName) {
+            btn.href = `/results/pdf/${studentId}/?exam=${encodeURIComponent(examName)}`;
+            btn.classList.remove('disabled');
+        } else {
+            btn.href = '#';
+            btn.classList.add('disabled');
+        }
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Notices - Shiv Shakti Public School{% endblock %}
+
+{% block body %}
+<div class="dashboard-layout">
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">🏫</div>
+            <div>
+                <h2>Shiv Shakti Public School</h2>
+            </div>
+        </div>
+        <nav>
+            <ul class="sidebar-nav">
+                <li class="nav-item"><a href="{% url 'admin_dashboard' %}" class="nav-link"><span class="icon">📊</span>
+                        Dashboard</a></li>
+                <li class="nav-item"><a href="{% url 'student_list' %}" class="nav-link"><span class="icon">🎓</span>
+                        Students</a></li>
+                <li class="nav-item"><a href="{% url 'teacher_list' %}" class="nav-link"><span class="icon">👨‍🏫</span>
+                        Teachers</a></li>
+                <li class="nav-item"><a href="{% url 'notice_list' %}" class="nav-link active"><span
+                            class="icon">📢</span> Notices</a></li>
+                <li class="nav-item" style="margin-top: 2rem;"><a href="{% url 'logout' %}" class="nav-link"><span
+                            class="icon">🚪</span> Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-header">
+            <h1 class="page-title">📢 Notices</h1><a href="{% url 'notice_add' %}" class="btn btn-primary">➕ Create
+                Notice</a>
+        </div>
+
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Priority</th>
+                        <th>Audience</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for notice in notices %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><strong>{{ notice.title }}</strong></td>
+                        <td><span class="badge badge-info">{{ notice.category }}</span></td>
+                        <td><span
+                                class="badge badge-{% if notice.priority == 'High' %}danger{% elif notice.priority == 'Medium' %}warning{% else %}success{% endif %}">{{
+                                notice.priority }}</span></td>
+                        <td>{{ notice.audience }}</td>
+                        <td>{{ notice.notice_date }}</td>
+                        <td><a href="{% url 'notice_delete' notice.pk %}" class="btn btn-sm btn-danger"
+                                onclick="return confirm('Delete this notice?')">Delete</a></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted p-4">No notices yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+{% endblock %}

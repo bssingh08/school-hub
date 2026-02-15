@@ -1,0 +1,312 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify Results{% endblock %}
+
+{% block body %}
+<style>
+    body {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        min-height: 100vh;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .page-container {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .page-header {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .page-header h1 {
+        color: #f5576c;
+        margin: 0;
+    }
+
+    .section {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .section h2 {
+        margin-top: 0;
+        color: #f5576c;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+    }
+
+    td {
+        padding: 1rem;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    tr:hover {
+        background: #f5f5f5;
+    }
+
+    .btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+        margin-right: 0.5rem;
+    }
+
+    .btn-approve {
+        background: #10b981;
+        color: white;
+    }
+
+    .btn-reject {
+        background: #ef4444;
+        color: white;
+    }
+
+    .btn-delete {
+        background: #6b7280;
+        color: white;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .grade-badge {
+        display: inline-block;
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .grade-a-plus {
+        background: #10b981;
+        color: white;
+    }
+
+    .grade-a {
+        background: #3b82f6;
+        color: white;
+    }
+
+    .grade-b-plus {
+        background: #8b5cf6;
+        color: white;
+    }
+
+    .grade-b {
+        background: #f59e0b;
+        color: white;
+    }
+
+    .grade-c,
+    .grade-d,
+    .grade-f {
+        background: #ef4444;
+        color: white;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-verified {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-rejected {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-bottom: 1rem;
+        color: white;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        transition: all 0.3s;
+    }
+
+    .back-link:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .no-results {
+        text-align: center;
+        padding: 3rem;
+        color: #666;
+    }
+</style>
+
+<div class="page-container">
+    <a href="{% url 'admin_dashboard' %}" class="back-link">← Back to Dashboard</a>
+
+    <div class="page-header">
+        <h1>Verify Student Results</h1>
+        <p style="margin: 0.5rem 0 0 0; color: #666;">Review and approve results submitted by teachers</p>
+    </div>
+
+    {% if messages %}
+    {% for message in messages %}
+    <div
+        style="background: {% if message.tags == 'success' %}#d1fae5{% elif message.tags == 'error' %}#fee2e2{% else %}#fef3c7{% endif %}; padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- Pending Results Section -->
+    <div class="section">
+        <h2>⏳ Pending Verification ({{ pending_results.count }})</h2>
+        {% if pending_results %}
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Class</th>
+                        <th>Exam</th>
+                        <th>Subject</th>
+                        <th>Marks</th>
+                        <th>Percentage</th>
+                        <th>Grade</th>
+                        <th>Submitted By</th>
+                        <th>Submission Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in pending_results %}
+                    <tr>
+                        <td><strong>{{ result.student.name }}</strong></td>
+                        <td>{{ result.student.student_class }}</td>
+                        <td>{{ result.exam_name }}</td>
+                        <td>{{ result.subject.subject_name }}</td>
+                        <td>{{ result.marks_obtained }} / {{ result.total_marks }}</td>
+                        <td>{{ result.percentage|floatformat:2 }}%</td>
+                        <td>
+                            <span class="grade-badge grade-{{ result.grade|lower|cut:'+' }}">
+                                {{ result.grade }}
+                            </span>
+                        </td>
+                        <td>{{ result.submitted_by.name }}</td>
+                        <td>{{ result.submission_date|date:"M d, Y" }}</td>
+                        <td>
+                            <form method="POST" action="{% url 'result_approve' result.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-approve">✓ Approve</button>
+                            </form>
+                            <form method="POST" action="{% url 'result_reject' result.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-reject">✗ Reject</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-results">
+            <p>No pending results to verify.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Recent Actions Section -->
+    <div class="section">
+        <h2>📋 Recent Verification History</h2>
+        {% if recent_results %}
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Class</th>
+                        <th>Exam</th>
+                        <th>Subject</th>
+                        <th>Marks</th>
+                        <th>Grade</th>
+                        <th>Status</th>
+                        <th>Submitted By</th>
+                        <th>Verified By</th>
+                        <th>Verification Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in recent_results %}
+                    <tr>
+                        <td><strong>{{ result.student.name }}</strong></td>
+                        <td>{{ result.student.student_class }}</td>
+                        <td>{{ result.exam_name }}</td>
+                        <td>{{ result.subject.subject_name }}</td>
+                        <td>{{ result.marks_obtained }} / {{ result.total_marks }}</td>
+                        <td>
+                            <span class="grade-badge grade-{{ result.grade|lower|cut:'+' }}">
+                                {{ result.grade }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status-badge status-{{ result.verification_status|lower }}">
+                                {{ result.verification_status }}
+                            </span>
+                        </td>
+                        <td>{{ result.submitted_by.name }}</td>
+                        <td>{{ result.verified_by.name|default:"—" }}</td>
+                        <td>{{ result.verification_date|date:"M d, Y"|default:"—" }}</td>
+                        <td>
+                            <form method="POST" action="{% url 'result_delete' result.id %}" style="display: inline;"
+                                onsubmit="return confirm('Are you sure you want to delete this result?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-delete">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-results">
+            <p>No verification history yet.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

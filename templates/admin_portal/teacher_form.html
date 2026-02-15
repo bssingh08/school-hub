@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - Shiv Shakti Public School{% endblock %}
+
+{% block body %}
+<div class="dashboard-layout">
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">🏫</div>
+            <div>
+                <h2>Shiv Shakti Public School</h2>
+                <small style="opacity: 0.7; font-size: 0.75rem;">Admin Dashboard</small>
+            </div>
+        </div>
+
+        <nav>
+            <ul class="sidebar-nav">
+                <li class="nav-item"><a href="{% url 'admin_dashboard' %}" class="nav-link"><span class="icon">📊</span>
+                        Dashboard</a></li>
+                <li class="nav-item"><a href="{% url 'student_list' %}" class="nav-link"><span class="icon">🎓</span>
+                        Students</a></li>
+                <li class="nav-item"><a href="{% url 'teacher_list' %}" class="nav-link active"><span
+                            class="icon">👨‍🏫</span> Teachers</a></li>
+                <li class="nav-item" style="margin-top: 2rem;"><a href="{% url 'logout' %}" class="nav-link"><span
+                            class="icon">🚪</span> Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-header">
+            <h1 class="page-title">{{ title }}</h1>
+            <a href="{% url 'teacher_list' %}" class="btn btn-outline">← Back to Teachers</a>
+        </div>
+
+        <div class="card" style="max-width: 900px;">
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}error{% else %}{{ message.tags }}{% endif %}"
+                style="margin-bottom: 1rem;">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            {% if form.errors %}
+            <div class="alert alert-error" style="margin-bottom: 1rem;">
+                <strong>Please fix the following errors:</strong>
+                <ul style="margin: 0.5rem 0 0 1rem;">
+                    {% for field in form %}
+                    {% for error in field.errors %}
+                    <li>{{ field.label }}: {{ error }}</li>
+                    {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Teacher Name *</label>
+                        {{ form.name }}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Father's Name</label>
+                        {{ form.father_name }}
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Email *</label>
+                        {{ form.email }}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password {% if not teacher %}*{% endif %}</label>
+                        <input type="password" name="password" class="form-input"
+                            placeholder="{% if teacher %}Leave blank to keep current{% else %}Enter password{% endif %}">
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Mobile Number</label>
+                        {{ form.mobile }}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Aadhar Number</label>
+                        {{ form.aadhar_no }}
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Qualification</label>
+                        {{ form.qualification }}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Role</label>
+                        {{ form.role }}
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Joining Date</label>
+                        {{ form.joining_date }}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Monthly Salary (₹)</label>
+                        {{ form.monthly_salary }}
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Subjects</label>
+                        {{ form.subjects }}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Class Teacher Of</label>
+                        {{ form.class_section }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Address</label>
+                    {{ form.address }}
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Photo</label>
+                        {{ form.photo }}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <div style="padding-top: 0.5rem;">{{ form.is_active }} Active</div>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        {% if teacher %}Update Teacher{% else %}Add Teacher{% endif %}
+                    </button>
+                    <a href="{% url 'teacher_list' %}" class="btn btn-outline">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+{% endblock %}

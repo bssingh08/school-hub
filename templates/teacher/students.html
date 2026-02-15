@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}My Students - Shiv Shakti Public School{% endblock %}
+{% block body %}
+<div class="dashboard-layout">
+    <aside class="sidebar" style="background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);">
+        <div class="sidebar-brand">
+            <div class="brand-icon">👨‍🏫</div>
+            <div>
+                <h2>Teacher Portal</h2>
+            </div>
+        </div>
+        <nav>
+            <ul class="sidebar-nav">
+                <li class="nav-item"><a href="{% url 'teacher_dashboard' %}" class="nav-link"><span
+                            class="icon">📊</span> Dashboard</a></li>
+                <li class="nav-item"><a href="{% url 'teacher_salary_history' %}" class="nav-link"><span
+                            class="icon">💵</span> Salary History</a></li>
+                <li class="nav-item"><a href="{% url 'teacher_students' %}" class="nav-link active"><span
+                            class="icon">🎓</span> Students</a></li>
+                <li class="nav-item"><a href="{% url 'teacher_profile' %}" class="nav-link"><span class="icon">👤</span>
+                        My Profile</a></li>
+                <li class="nav-item" style="margin-top: 2rem;"><a href="{% url 'logout' %}" class="nav-link"><span
+                            class="icon">🚪</span> Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+    <main class="main-content">
+        <div class="top-header">
+            <h1 class="page-title">🎓 My Students {% if teacher.class_section %}- {{ teacher.class_section }}{% endif %}
+            </h1>
+        </div>
+        {% if teacher.class_section %}
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Father's Name</th>
+                        <th>Mobile</th>
+                        <th>Email</th>
+                        <th>Monthly Fee</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><strong>{{ student.name }}</strong></td>
+                        <td>{{ student.father_name }}</td>
+                        <td>{{ student.mobile }}</td>
+                        <td>{{ student.email|default:"-" }}</td>
+                        <td>₹{{ student.monthly_fee }}</td>
+                        <td><span class="badge badge-{% if student.is_active %}success{% else %}danger{% endif %}">{% if student.is_active %}Active{% else %}Inactive{% endif %}</span></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted p-4">No students in your class</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="card">
+            <p class="text-center text-muted p-4">You are not assigned as class teacher to any class yet.</p>
+        </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}

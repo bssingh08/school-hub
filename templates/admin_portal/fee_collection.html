@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Fee Collection - Shiv Shakti Public School{% endblock %}
+
+{% block body %}
+<div class="dashboard-layout">
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">🏫</div>
+            <div>
+                <h2>Shiv Shakti Public School</h2>
+            </div>
+        </div>
+        <nav>
+            <ul class="sidebar-nav">
+                <li class="nav-item"><a href="{% url 'admin_dashboard' %}" class="nav-link"><span class="icon">📊</span>
+                        Dashboard</a></li>
+                <span class="nav-section-title">Management</span>
+                <li class="nav-item"><a href="{% url 'student_list' %}" class="nav-link"><span class="icon">🎓</span>
+                        Students</a></li>
+                <li class="nav-item"><a href="{% url 'teacher_list' %}" class="nav-link"><span class="icon">👨‍🏫</span>
+                        Teachers</a></li>
+                <li class="nav-item"><a href="{% url 'class_list' %}" class="nav-link"><span class="icon">🏛️</span>
+                        Classes</a></li>
+                <span class="nav-section-title">Finance</span>
+                <li class="nav-item"><a href="{% url 'fee_collection' %}" class="nav-link active"><span
+                            class="icon">💰</span> Fee Collection</a></li>
+                <li class="nav-item"><a href="{% url 'salary_management' %}" class="nav-link"><span
+                            class="icon">💵</span> Salary Payments</a></li>
+                <li class="nav-item" style="margin-top: 2rem;"><a href="{% url 'logout' %}" class="nav-link"><span
+                            class="icon">🚪</span> Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-header">
+            <h1 class="page-title">💰 Fee Collection</h1>
+            <a href="{% url 'fee_add' %}" class="btn btn-primary">➕ Record Payment</a>
+        </div>
+
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+
+        <div class="card mb-3">
+            <form method="get" class="flex gap-2 items-center">
+                <label class="form-label" style="margin: 0;">Filter:</label>
+                <select name="status" class="form-input" style="width: auto;">
+                    <option value="">All Status</option>
+                    <option value="Paid" {% if selected_status == 'Paid' %}selected{% endif %}>Paid</option>
+                    <option value="Pending" {% if selected_status == 'Pending' %}selected{% endif %}>Pending</option>
+                    <option value="Partial" {% if selected_status == 'Partial' %}selected{% endif %}>Partial</option>
+                </select>
+                <button type="submit" class="btn btn-outline btn-sm">Filter</button>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Student</th>
+                        <th>Month/Year</th>
+                        <th>Paid Amount</th>
+                        <th>Due Amount</th>
+                        <th>Mode</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in payments %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><strong>{{ payment.student.name }}</strong></td>
+                        <td>{{ payment.month }} {{ payment.year }}</td>
+                        <td class="text-success">₹{{ payment.paid_amount }}</td>
+                        <td class="text-danger">₹{{ payment.due_amount }}</td>
+                        <td>{{ payment.payment_mode }}</td>
+                        <td>{{ payment.payment_date }}</td>
+                        <td><span
+                                class="badge badge-{% if payment.status == 'Paid' %}success{% elif payment.status == 'Pending' %}warning{% else %}info{% endif %}">{{
+                                payment.status }}</span></td>
+                        <td><a href="{% url 'fee_edit' payment.pk %}" class="btn btn-sm btn-outline">Edit</a></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center text-muted p-4">No fee payments recorded yet. <a
+                                href="{% url 'fee_add' %}">Record first payment</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+{% endblock %}

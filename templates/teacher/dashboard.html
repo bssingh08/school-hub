@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% block title %}Teacher Dashboard - Shiv Shakti Public School{% endblock %}
+{% block body %}
+<div class="dashboard-layout">
+    <aside class="sidebar" style="background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);">
+        <div class="sidebar-brand">
+            <div class="brand-icon">👨‍🏫</div>
+            <div>
+                <h2>Teacher Portal</h2><small style="opacity: 0.7;">{{ teacher.name }}</small>
+            </div>
+        </div>
+        <nav>
+            <ul class="sidebar-nav">
+                <li class="nav-item"><a href="{% url 'teacher_dashboard' %}" class="nav-link active"><span
+                            class="icon">📊</span> Dashboard</a></li>
+                <li class="nav-item"><a href="{% url 'teacher_salary_history' %}" class="nav-link"><span
+                            class="icon">💵</span> Salary History</a></li>
+                <li class="nav-item"><a href="{% url 'teacher_students' %}" class="nav-link"><span
+                            class="icon">🎓</span> Students</a></li>
+                <li class="nav-item"><a href="{% url 'student_attendance_list' %}" class="nav-link"><span
+                            class="icon">📋</span> Student Attendance</a></li>
+                <li class="nav-item"><a href="{% url 'result_submit' %}" class="nav-link"><span class="icon">📝</span>
+                        Submit Results</a></li>
+                <li class="nav-item"><a href="{% url 'result_download' %}" class="nav-link"><span class="icon">📄</span>
+                        Download Result PDF</a></li>
+                <li class="nav-item"><a href="{% url 'teacher_profile' %}" class="nav-link"><span class="icon">👤</span>
+                        My Profile</a></li>
+                <li class="nav-item" style="margin-top: 2rem;"><a href="{% url 'logout' %}" class="nav-link"><span
+                            class="icon">🚪</span> Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-header">
+            <h1 class="page-title">Welcome, {{ teacher.name }}! 👋</h1>
+            <div class="user-profile">
+                <div class="user-avatar" style="background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);">{{
+                    teacher.name|slice:":1"|upper }}</div>
+                <div><strong>{{ teacher.name }}</strong>
+                    <div style="font-size: 0.75rem; color: var(--gray-500);">{{ teacher.role }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Salary Overview -->
+        <div class="stats-grid animate-slideUp">
+            <div class="stat-card revenue">
+                <div class="stat-icon">💵</div>
+                <div class="stat-content">
+                    <h3>Monthly Salary</h3>
+                    <div class="stat-value">₹{{ teacher.monthly_salary }}</div>
+                </div>
+            </div>
+            <div class="stat-card income">
+                <div class="stat-icon">✅</div>
+                <div class="stat-content">
+                    <h3>Total Received</h3>
+                    <div class="stat-value">₹{{ total_received|floatformat:0 }}</div>
+                </div>
+            </div>
+            <div class="stat-card expense">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-content">
+                    <h3>Pending</h3>
+                    <div class="stat-value">₹{{ pending_salary|floatformat:0 }}</div>
+                </div>
+            </div>
+            <div class="stat-card info">
+                <div class="stat-icon">🎓</div>
+                <div class="stat-content">
+                    <h3>Students in Class</h3>
+                    <div class="stat-value">{{ students|length }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <!-- Recent Salary Payments -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Recent Salary Payments</h3><a href="{% url 'teacher_salary_history' %}"
+                        class="btn btn-sm btn-outline">View All</a>
+                </div>
+                <div class="table-container" style="box-shadow: none;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for payment in recent_payments %}
+                            <tr>
+                                <td>{{ payment.month }} {{ payment.year }}</td>
+                                <td>₹{{ payment.paid_amount }}</td>
+                                <td><span
+                                        class="badge badge-{% if payment.status == 'Paid' %}success{% else %}warning{% endif %}">{{
+                                        payment.status }}</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">No salary records</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Notices -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">📢 School Notices</h3>
+                </div>
+                {% for notice in notices %}
+                <div style="padding: 0.75rem; border-bottom: 1px solid var(--gray-100);">
+                    <strong>{{ notice.title }}</strong>
+                    <p class="text-muted" style="font-size: 0.875rem; margin: 0.25rem 0;">{{
+                        notice.description|truncatechars:100 }}</p>
+                    <small class="text-muted">{{ notice.notice_date }}</small>
+                </div>
+                {% empty %}
+                <p class="text-center text-muted p-3">No notices</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if teacher.class_section %}
+        <div class="card mt-3">
+            <div class="card-header">
+                <h3 class="card-title">🎓 My Class - {{ teacher.class_section }}</h3><a
+                    href="{% url 'teacher_students' %}" class="btn btn-sm btn-outline">View All</a>
+            </div>
+            <div class="table-container" style="box-shadow: none;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Father's Name</th>
+                            <th>Mobile</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students|slice:":5" %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><strong>{{ student.name }}</strong></td>
+                            <td>{{ student.father_name }}</td>
+                            <td>{{ student.mobile }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">No students in class</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}

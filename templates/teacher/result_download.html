@@ -1,0 +1,358 @@
+{% extends 'base.html' %}
+
+{% block title %}Download Result PDF{% endblock %}
+
+{% block body %}
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .page-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .page-header {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .page-header h1 {
+        color: #667eea;
+        margin: 0 0 0.5rem 0;
+        font-size: 2rem;
+    }
+
+    .page-header p {
+        margin: 0;
+        color: #666;
+    }
+
+    .form-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-card h2 {
+        margin-top: 0;
+        color: #667eea;
+        font-size: 1.4rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #333;
+        font-size: 1rem;
+    }
+
+    .form-group select {
+        width: 100%;
+        padding: 0.9rem 1rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: border-color 0.3s, box-shadow 0.3s;
+        background: white;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+    }
+
+    .form-group select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+    }
+
+    .btn {
+        padding: 1rem 2.5rem;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-bottom: 1rem;
+        color: white;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        transition: all 0.3s;
+    }
+
+    .back-link:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .info-box {
+        background: #f0f4ff;
+        border: 1px solid #d0d9ff;
+        border-radius: 12px;
+        padding: 1.2rem;
+        margin-top: 1.5rem;
+        color: #4a5568;
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    .info-box strong {
+        color: #667eea;
+    }
+
+    .preview-info {
+        background: linear-gradient(135deg, #f0f4ff 0%, #e8ecff 100%);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+        display: none;
+    }
+
+    .preview-info.visible {
+        display: block;
+    }
+
+    .preview-info h3 {
+        color: #667eea;
+        margin: 0 0 0.5rem 0;
+        font-size: 1rem;
+    }
+
+    .preview-info p {
+        margin: 0.3rem 0;
+        color: #555;
+    }
+
+    @media (max-width: 600px) {
+        .page-container {
+            padding: 1rem;
+        }
+
+        .form-card {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<div class="page-container">
+    <a href="{% url 'teacher_dashboard' %}" class="back-link">← Back to Dashboard</a>
+
+    <div class="page-header">
+        <h1>📄 Download Result PDF</h1>
+        <p>Generate a printable result sheet with all subject marks</p>
+    </div>
+
+    {% if messages %}
+    {% for message in messages %}
+    <div
+        style="background: {% if message.tags == 'success' %}#d1fae5{% elif message.tags == 'error' %}#fee2e2{% else %}#fef3c7{% endif %}; padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="form-card">
+        <h2>📋 Select Student &amp; Exam</h2>
+        <form id="resultForm" method="GET" action="">
+
+            <!-- Search & Filter Section -->
+            <div style="display: flex; gap: 12px; margin-bottom: 1.2rem; flex-wrap: wrap;">
+                <div style="flex: 2; min-width: 200px;">
+                    <label for="searchName"
+                        style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333; font-size: 0.95rem;">🔍
+                        Search by Name</label>
+                    <input type="text" id="searchName" placeholder="Type student name..." autocomplete="off"
+                        style="width: 100%; padding: 0.85rem 1rem; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 1rem; transition: border-color 0.3s, box-shadow 0.3s; background: white; outline: none;"
+                        onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 3px rgba(102,126,234,0.15)'"
+                        onblur="this.style.borderColor='#e0e0e0'; this.style.boxShadow='none'"
+                        oninput="filterStudents()">
+                </div>
+                <div style="flex: 1; min-width: 150px;">
+                    <label for="filterClass"
+                        style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333; font-size: 0.95rem;">🏫
+                        Filter by Class</label>
+                    <select id="filterClass" onchange="filterStudents()"
+                        style="width: 100%; padding: 0.85rem 1rem; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 1rem; transition: border-color 0.3s, box-shadow 0.3s; background: white; appearance: none; background-image: url('data:image/svg+xml,%3Csvg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;12&quot; height=&quot;12&quot; viewBox=&quot;0 0 12 12&quot;%3E%3Cpath fill=&quot;%23667eea&quot; d=&quot;M6 8L1 3h10z&quot;/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 1rem center;">
+                        <option value="">All Classes</option>
+                        {% for cls in classes %}
+                        <option value="{{ cls.id }}">{{ cls.class_name }} - {{ cls.section }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Student Count Badge -->
+            <div id="studentCount" style="margin-bottom: 0.8rem; font-size: 0.85rem; color: #667eea; font-weight: 600;">
+                📊 Showing all students
+            </div>
+
+            <div class="form-group">
+                <label for="student">👨‍🎓 Select Student *</label>
+                <select name="student" id="student" required onchange="updatePreview()">
+                    <option value="">-- Choose a Student --</option>
+                    {% for student in students %}
+                    <option value="{{ student.id }}" data-name="{{ student.name }}"
+                        data-class-id="{{ student.student_class_id|default:'' }}"
+                        data-class="{{ student.student_class|default:'N/A' }}" data-father="{{ student.father_name }}">
+                        {{ student.name }} — {{ student.student_class|default:"No Class" }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="exam">📝 Select Exam *</label>
+                <select name="exam" id="exam" required onchange="updatePreview()">
+                    <option value="">-- Choose an Exam --</option>
+                    {% for exam in exam_names %}
+                    <option value="{{ exam }}">{{ exam }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="preview-info" id="previewInfo">
+                <h3>📌 Selected Details</h3>
+                <p><strong>Student:</strong> <span id="prevName">-</span></p>
+                <p><strong>Class:</strong> <span id="prevClass">-</span></p>
+                <p><strong>Father's Name:</strong> <span id="prevFather">-</span></p>
+                <p><strong>Exam:</strong> <span id="prevExam">-</span></p>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="submitBtn" disabled>
+                📄 Generate Result PDF
+            </button>
+        </form>
+
+        <div class="info-box">
+            <strong>ℹ️ Note:</strong> Only <strong>verified results</strong> (approved by admin) will appear in the PDF.
+            Make sure all subject results for the selected exam have been submitted and verified before downloading.
+        </div>
+    </div>
+</div>
+
+<script>
+    // Store all student options for filtering
+    const studentSelect = document.getElementById('student');
+    const allStudents = [];
+    for (let i = 1; i < studentSelect.options.length; i++) {
+        const opt = studentSelect.options[i];
+        allStudents.push({
+            value: opt.value,
+            text: opt.text,
+            name: opt.dataset.name || '',
+            classId: opt.dataset.classId || '',
+            className: opt.dataset.class || '',
+            father: opt.dataset.father || ''
+        });
+    }
+
+    function filterStudents() {
+        const searchName = document.getElementById('searchName').value.toLowerCase().trim();
+        const filterClass = document.getElementById('filterClass').value;
+
+        // Clear current options
+        studentSelect.innerHTML = '<option value="">-- Choose a Student --</option>';
+
+        let count = 0;
+        allStudents.forEach(function (s) {
+            const nameMatch = !searchName || s.name.toLowerCase().includes(searchName);
+            const classMatch = !filterClass || s.classId === filterClass;
+
+            if (nameMatch && classMatch) {
+                const opt = document.createElement('option');
+                opt.value = s.value;
+                opt.text = s.text;
+                opt.dataset.name = s.name;
+                opt.dataset.classId = s.classId;
+                opt.dataset.class = s.className;
+                opt.dataset.father = s.father;
+                studentSelect.appendChild(opt);
+                count++;
+            }
+        });
+
+        // Update count badge
+        const countEl = document.getElementById('studentCount');
+        if (searchName || filterClass) {
+            countEl.textContent = `📊 Found ${count} student${count !== 1 ? 's' : ''} matching your search`;
+            countEl.style.color = count > 0 ? '#10b981' : '#ef4444';
+        } else {
+            countEl.textContent = `📊 Showing all ${count} students`;
+            countEl.style.color = '#667eea';
+        }
+
+        // Reset preview since selection changed
+        updatePreview();
+    }
+
+    function updatePreview() {
+        const examSelect = document.getElementById('exam');
+        const previewInfo = document.getElementById('previewInfo');
+        const submitBtn = document.getElementById('submitBtn');
+
+        const selectedStudent = studentSelect.options[studentSelect.selectedIndex];
+        const selectedExam = examSelect.value;
+
+        if (studentSelect.value && selectedExam) {
+            document.getElementById('prevName').textContent = selectedStudent.dataset.name || '-';
+            document.getElementById('prevClass').textContent = selectedStudent.dataset.class || '-';
+            document.getElementById('prevFather').textContent = selectedStudent.dataset.father || '-';
+            document.getElementById('prevExam').textContent = selectedExam;
+            previewInfo.classList.add('visible');
+            submitBtn.disabled = false;
+
+            // Update form action to point to the PDF view
+            const form = document.getElementById('resultForm');
+            form.action = `/results/pdf/${studentSelect.value}/`;
+        } else {
+            previewInfo.classList.remove('visible');
+            submitBtn.disabled = true;
+        }
+    }
+</script>
+
+{% endblock %}

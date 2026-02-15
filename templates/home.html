@@ -1,0 +1,756 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ school_info.school_name }} - Welcome{% endblock %}
+
+{% block extra_css %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        overflow-x: hidden;
+        background: #0f172a;
+    }
+
+    /* Hero Section */
+    .hero {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #dc2626 0%, #7f1d1d 100%);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+        background-size: cover;
+        animation: wave 10s ease-in-out infinite;
+    }
+
+    @keyframes wave {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+
+    .hero-content {
+        text-align: center;
+        color: white;
+        z-index: 2;
+        max-width: 1200px;
+        animation: fadeInUp 1s ease;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .school-logo {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+        animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    .hero h1 {
+        font-size: 4rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 2px 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero-subtitle {
+        font-size: 1.5rem;
+        opacity: 0.95;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero-info {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+    }
+
+    .scroll-indicator {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        animation: scroll 2s infinite;
+    }
+
+    @keyframes scroll {
+
+        0%,
+        100% {
+            transform: translate(-50%, 0);
+        }
+
+        50% {
+            transform: translate(-50%, 10px);
+        }
+    }
+
+    .scroll-indicator span {
+        display: block;
+        width: 30px;
+        height: 50px;
+        border: 3px solid white;
+        border-radius: 25px;
+        position: relative;
+    }
+
+    .scroll-indicator span::before {
+        content: '';
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        width: 6px;
+        height: 6px;
+        background: white;
+        border-radius: 50%;
+        transform: translateX(-50%);
+        animation: scrollDot 2s infinite;
+    }
+
+    @keyframes scrollDot {
+        0% {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
+
+        100% {
+            transform: translate(-50%, 20px);
+            opacity: 0;
+        }
+    }
+
+    /* Stats Section */
+    .stats-section {
+        background: linear-gradient(135deg, #991b1b 0%, #dc2626 100%);
+        padding: 5rem 2rem;
+        position: relative;
+    }
+
+    .stats-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        animation: fadeIn 1s ease forwards;
+        opacity: 0;
+    }
+
+    .stat-card:nth-child(1) {
+        animation-delay: 0.1s;
+    }
+
+    .stat-card:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .stat-card:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+
+    .stat-card:nth-child(4) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes fadeIn {
+        to {
+            opacity: 1;
+        }
+    }
+
+    .stat-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 500;
+    }
+
+    /* Portfolio Section */
+    .portfolio-section {
+        background: #0f172a;
+        padding: 5rem 2rem;
+        color: white;
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 3rem;
+        background: linear-gradient(135deg, #dc2626 0%, #7f1d1d 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .portfolio-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .portfolio-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .portfolio-card:hover {
+        transform: translateY(-5px);
+        border-color: #dc2626;
+        box-shadow: 0 10px 30px rgba(220, 38, 38, 0.3);
+    }
+
+    .portfolio-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: #dc2626;
+    }
+
+    .portfolio-card p {
+        color: rgba(255, 255, 255, 0.8);
+        line-height: 1.6;
+    }
+
+    /* Gallery Section */
+    .gallery-section {
+        background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+        padding: 5rem 2rem;
+    }
+
+    .gallery-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .gallery-item {
+        position: relative;
+        border-radius: 15px;
+        overflow: hidden;
+        aspect-ratio: 4/3;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+    .gallery-item:hover {
+        transform: scale(1.05);
+    }
+
+    .gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .gallery-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+        padding: 1rem;
+        color: white;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+    }
+
+    .gallery-item:hover .gallery-overlay {
+        transform: translateY(0);
+    }
+
+    /* Login Section */
+    .login-section {
+        background: #0f172a;
+        padding: 5rem 2rem;
+    }
+
+    .login-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .login-card {
+        background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(127, 29, 29, 0.1) 100%);
+        backdrop-filter: blur(10px);
+        border-radius: 25px;
+        padding: 3rem 2rem;
+        text-align: center;
+        border: 2px solid rgba(220, 38, 38, 0.3);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        text-decoration: none;
+        color: white;
+        display: block;
+    }
+
+    .login-card:hover {
+        transform: translateY(-15px) scale(1.05);
+        border-color: #dc2626;
+        box-shadow: 0 20px 60px rgba(220, 38, 38, 0.4);
+        background: linear-gradient(135deg, rgba(220, 38, 38, 0.2) 0%, rgba(127, 29, 29, 0.2) 100%);
+    }
+
+    .login-icon {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        display: inline-block;
+        transition: transform 0.3s ease;
+    }
+
+    .login-card:hover .login-icon {
+        transform: scale(1.2) rotate(10deg);
+    }
+
+    .login-card h3 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        color: white;
+    }
+
+    .login-card p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+    }
+
+    /* Results Section */
+    .results-section {
+        background: linear-gradient(135deg, #991b1b 0%, #dc2626 100%);
+        padding: 5rem 2rem;
+    }
+
+    .results-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .results-table-wrapper {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 2rem;
+        overflow-x: auto;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .results-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .results-table th {
+        background: linear-gradient(135deg, #dc2626 0%, #7f1d1d 100%);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+    }
+
+    .results-table th:first-child {
+        border-top-left-radius: 10px;
+    }
+
+    .results-table th:last-child {
+        border-top-right-radius: 10px;
+    }
+
+    .results-table td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .results-table tr:hover {
+        background: rgba(220, 38, 38, 0.1);
+    }
+
+    .grade-badge {
+        display: inline-block;
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .grade-a-plus {
+        background: #ef4444;
+        color: white;
+    }
+
+    .grade-a {
+        background: #3b82f6;
+        color: white;
+    }
+
+    .grade-b-plus {
+        background: #8b5cf6;
+        color: white;
+    }
+
+    .grade-b {
+        background: #f59e0b;
+        color: white;
+    }
+
+    .grade-c {
+        background: #ef4444;
+        color: white;
+    }
+
+    .view-all-btn {
+        display: inline-block;
+        margin-top: 2rem;
+        padding: 1rem 3rem;
+        background: linear-gradient(135deg, #dc2626 0%, #7f1d1d 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4);
+    }
+
+    .view-all-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(220, 38, 38, 0.6);
+    }
+
+    /* Footer */
+    .footer {
+        background: #0f172a;
+        color: white;
+        text-align: center;
+        padding: 3rem 2rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .footer-links a {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .footer-links a:hover {
+        color: #dc2626;
+    }
+
+    .social-icons {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .social-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .social-icon:hover {
+        background: #dc2626;
+        transform: translateY(-5px);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hero h1 {
+            font-size: 2.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+        }
+
+        .login-card {
+            padding: 2rem 1rem;
+        }
+
+        .login-icon {
+            font-size: 3rem;
+        }
+    }
+
+    .no-results {
+        text-align: center;
+        padding: 3rem;
+        color: #666;
+        font-size: 1.2rem;
+    }
+
+    .no-gallery {
+        text-align: center;
+        padding: 3rem;
+        color: white;
+        font-size: 1.2rem;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="school-logo">🏫</div>
+        <h1>{{ school_info.school_name }}</h1>
+        <p class="hero-subtitle">{{ school_info.motto }}</p>
+        <p class="hero-info">📍 {{ school_info.address }}</p>
+        <p class="hero-info">👨‍💼 Principal: {{ school_info.principal_name }}</p>
+        <p class="hero-info">📞 {{ school_info.contact_number }} | {{ school_info.contact_number_2 }} | 📧 {{ school_info.email }}</p>
+    </div>
+    <div class="scroll-indicator">
+        <span></span>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-icon">🎓</div>
+            <div class="stat-number">{{ school_info.total_students }}+</div>
+            <div class="stat-label">Students</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">👨‍🏫</div>
+            <div class="stat-number">{{ school_info.total_teachers }}+</div>
+            <div class="stat-label">Qualified Teachers</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🏃‍♂️</div>
+            <div class="stat-number">100%</div>
+            <div class="stat-label">PT Exercise</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🎉</div>
+            <div class="stat-number">Annual</div>
+            <div class="stat-label">Events & Programs</div>
+        </div>
+    </div>
+</section>
+
+<!-- Portfolio Section -->
+<section class="portfolio-section">
+    <h2 class="section-title">About Our School</h2>
+    <div class="portfolio-grid">
+        <div class="portfolio-card">
+            <h3>🏫 School Information</h3>
+            <p><strong>Name:</strong> {{ school_info.school_name }}</p>
+            <p><strong>Address:</strong> {{ school_info.address }}</p>
+            <p><strong>Contact:</strong> {{ school_info.contact_number }}</p>
+            <p><strong>Email:</strong> {{ school_info.email }}</p>
+            <p><strong>Established:</strong> {{ school_info.established_year }}</p>
+        </div>
+        <div class="portfolio-card">
+            <h3>👨‍💼 Leadership</h3>
+            <p><strong>Principal:</strong> {{ school_info.principal_name }}</p>
+            <p>Under the visionary leadership of our principal, we strive for excellence in education and character
+                building.</p>
+        </div>
+        <div class="portfolio-card">
+            <h3>📚 Academic Excellence</h3>
+            <p>We provide quality education with modern teaching methods, experienced faculty, and comprehensive
+                curriculum designed for holistic development.</p>
+        </div>
+        <div class="portfolio-card">
+            <h3>🏃‍♂️ Physical Education</h3>
+            <p>Daily PT exercises, sports activities, and physical fitness programs to ensure healthy minds in healthy
+                bodies.</p>
+        </div>
+        <div class="portfolio-card">
+            <h3>🎭 Cultural Activities</h3>
+            <p>Annual day celebrations, cultural programs, competitions, and events that nurture creativity and
+                confidence.</p>
+        </div>
+        <div class="portfolio-card">
+            <h3>🌟 Our Vision</h3>
+            <p>{{ school_info.motto }} - We aim to create future leaders through quality education and value-based
+                learning.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Gallery Section -->
+{% if gallery_images %}
+<section class="gallery-section">
+    <h2 class="section-title" style="color: white;">School Gallery</h2>
+    <div class="gallery-grid">
+        {% for image in gallery_images %}
+        <div class="gallery-item">
+            <img src="{{ image.image.url }}" alt="{{ image.title }}">
+            <div class="gallery-overlay">
+                <h4>{{ image.title }}</h4>
+                <p>{{ image.category }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- Login Section -->
+<section class="login-section">
+    <h2 class="section-title">Portal Access</h2>
+    <div class="login-grid">
+        <a href="{% url 'admin_login' %}" class="login-card">
+            <div class="login-icon">👨‍💼</div>
+            <h3>Admin Portal</h3>
+            <p>Administrative Access</p>
+        </a>
+        <a href="{% url 'teacher_login' %}" class="login-card">
+            <div class="login-icon">👨‍🏫</div>
+            <h3>Teacher Portal</h3>
+            <p>Faculty Access</p>
+        </a>
+        <a href="{% url 'student_login' %}" class="login-card">
+            <div class="login-icon">🎓</div>
+            <h3>Student Portal</h3>
+            <p>Student Access</p>
+        </a>
+    </div>
+</section>
+
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-links">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'result_list' %}">Results</a>
+            <a href="{% url 'admin_login' %}">Admin</a>
+            <a href="{% url 'teacher_login' %}">Teachers</a>
+            <a href="{% url 'student_login' %}">Students</a>
+        </div>
+
+        <div class="social-icons">
+            <a href="#" class="social-icon">📘</a>
+            <a href="#" class="social-icon">📸</a>
+            <a href="#" class="social-icon">🐦</a>
+            <a href="#" class="social-icon">📧</a>
+        </div>
+
+        <p style="margin-top: 2rem; opacity: 0.7;">
+            &copy; {{ school_info.established_year }}-2026 {{ school_info.school_name }}. All rights reserved.
+        </p>
+        <p style="margin-top: 0.5rem; opacity: 0.6;">
+            {{ school_info.address }}
+        </p>
+        <p style="margin-top: 0.5rem; opacity: 0.6;">
+            📞 {{ school_info.contact_number }} | {{ school_info.contact_number_2 }} | 📧 {{ school_info.email }}
+        </p>
+        <p style="margin-top: 1.5rem; opacity: 0.8;">
+            Developed by 🏭 bssinghtechenterprises.pvt.ltd
+
+        </p>
+    </div>
+</footer>
+
+{% endblock %}

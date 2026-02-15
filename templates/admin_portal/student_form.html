@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - Shiv Shakti Public School{% endblock %}
+
+{% block body %}
+<div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">🏫</div>
+            <div>
+                <h2>Shiv Shakti Public School</h2>
+                <small style="opacity: 0.7; font-size: 0.75rem;">Admin Dashboard</small>
+            </div>
+        </div>
+
+        <nav>
+            <ul class="sidebar-nav">
+                <li class="nav-item">
+                    <a href="{% url 'admin_dashboard' %}" class="nav-link">
+                        <span class="icon">📊</span> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'student_list' %}" class="nav-link active">
+                        <span class="icon">🎓</span> Students
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'teacher_list' %}" class="nav-link">
+                        <span class="icon">👨‍🏫</span> Teachers
+                    </a>
+                </li>
+                <li class="nav-item" style="margin-top: 2rem;">
+                    <a href="{% url 'logout' %}" class="nav-link">
+                        <span class="icon">🚪</span> Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="top-header">
+            <h1 class="page-title">{{ title }}</h1>
+            <a href="{% url 'student_list' %}" class="btn btn-outline">← Back to Students</a>
+        </div>
+
+        <div class="card" style="max-width: 800px;">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Student Name *</label>
+                        {{ form.name }}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Father's Name *</label>
+                        {{ form.father_name }}
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Class</label>
+                        {{ form.student_class }}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mobile Number</label>
+                        {{ form.mobile }}
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        {{ form.email }}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password {% if not student %}*{% endif %}</label>
+                        <input type="password" name="password" class="form-input"
+                            placeholder="{% if student %}Leave blank to keep current{% else %}Enter password{% endif %}">
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Admission Date</label>
+                        {{ form.admission_date }}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Monthly Fee (₹)</label>
+                        {{ form.monthly_fee }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Address</label>
+                    {{ form.address }}
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Photo</label>
+                        {{ form.photo }}
+                        {% if student.photo %}
+                        <small class="text-muted">Current: {{ student.photo.name }}</small>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <div style="padding-top: 0.5rem;">
+                            {{ form.is_active }} Active
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        {% if student %}Update Student{% else %}Add Student{% endif %}
+                    </button>
+                    <a href="{% url 'student_list' %}" class="btn btn-outline">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+{% endblock %}

@@ -1,0 +1,153 @@
+from django import forms
+from .models import Admin, Teacher, Student, TeacherPayment, StudentPayment, Notice, Event, SchoolClass, Subject
+
+
+class LoginForm(forms.Form):
+    """Generic login form"""
+    email = forms.EmailField(widget=forms.EmailInput(attrs={
+        'class': 'form-input',
+        'placeholder': 'Enter your email'
+    }))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={
+        'class': 'form-input',
+        'placeholder': 'Enter your password'
+    }))
+
+
+class AdminForm(forms.ModelForm):
+    """Form for creating/editing admin"""
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-input'}), required=False)
+    
+    class Meta:
+        model = Admin
+        fields = ['name', 'email', 'phone', 'address', 'role', 'photo']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-input'}),
+            'email': forms.EmailInput(attrs={'class': 'form-input'}),
+            'phone': forms.TextInput(attrs={'class': 'form-input'}),
+            'address': forms.Textarea(attrs={'class': 'form-input', 'rows': 3}),
+            'role': forms.TextInput(attrs={'class': 'form-input'}),
+        }
+
+
+class TeacherForm(forms.ModelForm):
+    """Form for creating/editing teacher"""
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-input'}), required=False)
+    
+    class Meta:
+        model = Teacher
+        fields = ['name', 'father_name', 'email', 'mobile', 'address', 'aadhar_no', 
+                  'qualification', 'role', 'joining_date', 'subjects', 'class_section', 
+                  'monthly_salary', 'photo', 'is_active']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-input'}),
+            'father_name': forms.TextInput(attrs={'class': 'form-input'}),
+            'email': forms.EmailInput(attrs={'class': 'form-input'}),
+            'mobile': forms.TextInput(attrs={'class': 'form-input'}),
+            'address': forms.Textarea(attrs={'class': 'form-input', 'rows': 3}),
+            'aadhar_no': forms.TextInput(attrs={'class': 'form-input'}),
+            'qualification': forms.TextInput(attrs={'class': 'form-input'}),
+            'role': forms.TextInput(attrs={'class': 'form-input'}),
+            'joining_date': forms.DateInput(attrs={'class': 'form-input', 'type': 'date'}),
+            'subjects': forms.SelectMultiple(attrs={'class': 'form-input'}),
+            'class_section': forms.Select(attrs={'class': 'form-input'}),
+            'monthly_salary': forms.NumberInput(attrs={'class': 'form-input'}),
+        }
+
+
+class StudentForm(forms.ModelForm):
+    """Form for creating/editing student"""
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-input'}), required=False)
+    
+    class Meta:
+        model = Student
+        fields = ['name', 'father_name', 'student_class', 'address', 'email', 
+                  'mobile', 'admission_date', 'monthly_fee', 'photo', 'is_active']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-input'}),
+            'father_name': forms.TextInput(attrs={'class': 'form-input'}),
+            'student_class': forms.Select(attrs={'class': 'form-input'}),
+            'address': forms.Textarea(attrs={'class': 'form-input', 'rows': 3}),
+            'email': forms.EmailInput(attrs={'class': 'form-input'}),
+            'mobile': forms.TextInput(attrs={'class': 'form-input'}),
+            'admission_date': forms.DateInput(attrs={'class': 'form-input', 'type': 'date'}),
+            'monthly_fee': forms.NumberInput(attrs={'class': 'form-input'}),
+        }
+
+
+class TeacherPaymentForm(forms.ModelForm):
+    """Form for teacher salary payment"""
+    class Meta:
+        model = TeacherPayment
+        fields = ['teacher', 'payment_mode', 'paid_amount', 'due_amount', 'payment_date', 
+                  'status', 'month', 'year', 'remarks']
+        widgets = {
+            'teacher': forms.Select(attrs={'class': 'form-input'}),
+            'payment_mode': forms.Select(attrs={'class': 'form-input'}),
+            'paid_amount': forms.NumberInput(attrs={'class': 'form-input'}),
+            'due_amount': forms.NumberInput(attrs={'class': 'form-input'}),
+            'payment_date': forms.DateInput(attrs={'class': 'form-input', 'type': 'date'}),
+            'status': forms.Select(attrs={'class': 'form-input'}),
+            'month': forms.TextInput(attrs={'class': 'form-input'}),
+            'year': forms.NumberInput(attrs={'class': 'form-input'}),
+            'remarks': forms.Textarea(attrs={'class': 'form-input', 'rows': 2}),
+        }
+
+
+class StudentPaymentForm(forms.ModelForm):
+    """Form for student fee payment"""
+    class Meta:
+        model = StudentPayment
+        fields = ['student', 'payment_mode', 'paid_amount', 'due_amount', 'payment_date', 
+                  'status', 'month', 'year', 'remarks']
+        widgets = {
+            'student': forms.Select(attrs={'class': 'form-input'}),
+            'payment_mode': forms.Select(attrs={'class': 'form-input'}),
+            'paid_amount': forms.NumberInput(attrs={'class': 'form-input'}),
+            'due_amount': forms.NumberInput(attrs={'class': 'form-input'}),
+            'payment_date': forms.DateInput(attrs={'class': 'form-input', 'type': 'date'}),
+            'status': forms.Select(attrs={'class': 'form-input'}),
+            'month': forms.TextInput(attrs={'class': 'form-input'}),
+            'year': forms.NumberInput(attrs={'class': 'form-input'}),
+            'remarks': forms.Textarea(attrs={'class': 'form-input', 'rows': 2}),
+        }
+
+
+class NoticeForm(forms.ModelForm):
+    """Form for creating notices"""
+    class Meta:
+        model = Notice
+        fields = ['title', 'description', 'category', 'issued_by', 'priority', 
+                  'valid_until', 'audience', 'file']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-input'}),
+            'description': forms.Textarea(attrs={'class': 'form-input', 'rows': 4}),
+            'category': forms.Select(attrs={'class': 'form-input'}),
+            'issued_by': forms.TextInput(attrs={'class': 'form-input'}),
+            'priority': forms.Select(attrs={'class': 'form-input'}),
+            'valid_until': forms.DateInput(attrs={'class': 'form-input', 'type': 'date'}),
+            'audience': forms.Select(attrs={'class': 'form-input'}),
+        }
+
+
+class ClassForm(forms.ModelForm):
+    """Form for creating/editing class"""
+    class Meta:
+        model = SchoolClass
+        fields = ['class_name', 'section', 'strength']
+        widgets = {
+            'class_name': forms.TextInput(attrs={'class': 'form-input'}),
+            'section': forms.TextInput(attrs={'class': 'form-input'}),
+            'strength': forms.NumberInput(attrs={'class': 'form-input'}),
+        }
+
+
+class SubjectForm(forms.ModelForm):
+    """Form for creating/editing subject"""
+    class Meta:
+        model = Subject
+        fields = ['subject_name', 'subject_code']
+        widgets = {
+            'subject_name': forms.TextInput(attrs={'class': 'form-input'}),
+            'subject_code': forms.TextInput(attrs={'class': 'form-input'}),
+        }

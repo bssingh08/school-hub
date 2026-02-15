@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Student Attendance - Teacher Portal{% endblock %}
+
+{% block body %}
+<div class="dashboard-layout">
+    <aside class="sidebar" style="background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);">
+        <div class="sidebar-brand">
+            <div class="brand-icon">👨‍🏫</div>
+            <div>
+                <h2>Teacher Portal</h2><small style="opacity: 0.7;">{{ teacher.name }}</small>
+            </div>
+        </div>
+        <nav>
+            <ul class="sidebar-nav">
+                <li class="nav-item"><a href="{% url 'teacher_dashboard' %}" class="nav-link"><span
+                            class="icon">📊</span> Dashboard</a></li>
+                <li class="nav-item"><a href="{% url 'teacher_salary_history' %}" class="nav-link"><span
+                            class="icon">💵</span> Salary History</a></li>
+                <li class="nav-item"><a href="{% url 'teacher_students' %}" class="nav-link"><span
+                            class="icon">🎓</span> Students</a></li>
+                <li class="nav-item"><a href="{% url 'student_attendance_list' %}" class="nav-link active"><span
+                            class="icon">📋</span> Student Attendance</a></li>
+                <li class="nav-item"><a href="{% url 'teacher_profile' %}" class="nav-link"><span class="icon">👤</span>
+                        My Profile</a></li>
+                <li class="nav-item" style="margin-top: 2rem;"><a href="{% url 'logout' %}" class="nav-link"><span
+                            class="icon">🚪</span> Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-header">
+            <h1 class="page-title">📋 Student Daily Attendance</h1>
+            <div class="user-profile">
+                <div class="user-avatar" style="background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);">{{
+                    teacher.name|slice:":1"|upper }}</div>
+                <div><strong>{{ teacher.name }}</strong>
+                    <div style="font-size: 0.75rem; color: var(--gray-500);">{{ teacher.role }}</div>
+                </div>
+            </div>
+        </div>
+
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}error{% else %}{{ message.tags }}{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% if teacher.class_section %}
+        <div class="card"
+            style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%); color: white;">
+            <div class="flex gap-2" style="align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                <div>
+                    <h3 style="margin: 0;">📚 Class: {{ teacher.class_section }}</h3>
+                    <small style="opacity: 0.8;">Total Students: {{ total_students }}</small>
+                </div>
+                <form method="get" class="flex gap-2" style="align-items: flex-end;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label style="color: white; font-size: 0.875rem;">Select Date</label>
+                        <input type="date" name="date" class="form-control" value="{{ selected_date|date:'Y-m-d' }}"
+                            style="background: rgba(255,255,255,0.9); color: #333;">
+                    </div>
+                    <button type="submit" class="btn" style="background: white; color: #7c3aed;">View</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="stats-grid" style="margin-bottom: 1.5rem;">
+            <div class="stat-card info">
+                <div class="stat-icon">🎓</div>
+                <div class="stat-content">
+                    <h3>Total Students</h3>
+                    <div class="stat-value">{{ total_students }}</div>
+                </div>
+            </div>
+            <div class="stat-card revenue">
+                <div class="stat-icon">✅</div>
+                <div class="stat-content">
+                    <h3>Present</h3>
+                    <div class="stat-value">{{ present_count }}</div>
+                </div>
+            </div>
+            <div class="stat-card expense">
+                <div class="stat-icon">❌</div>
+                <div class="stat-content">
+                    <h3>Absent</h3>
+                    <div class="stat-value">{{ absent_count }}</div>
+                </div>
+            </div>
+            <div class="stat-card income">
+                <div class="stat-icon">📝</div>
+                <div class="stat-content">
+                    <h3>Leave/Half Day</h3>
+                    <div class="stat-value">{{ leave_count|add:halfday_count }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">📋 Mark Attendance for {{ selected_date|date:"d M Y" }}</h3>
+            </div>
+            <form method="post" action="{% url 'student_attendance_mark' %}">
+                {% csrf_token %}
+                <input type="hidden" name="attendance_date" value="{{ selected_date|date:'Y-m-d' }}">
+
+                <div class="table-container" style="box-shadow: none;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">#</th>
+                                <th>Student Name</th>
+                                <th>Father's Name</th>
+                                <th>Mobile</th>
+                                <th style="width: 180px;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in students_with_attendance %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>
+                                    <div class="flex gap-2" style="align-items: center;">
+                                        {% if item.student.photo %}
+                                        <img src="{{ item.student.photo.url }}" alt="{{ item.student.name }}"
+                                            style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">
+                                        {% else %}
+                                        <div
+                                            style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">
+                                            {{ item.student.name|slice:":1"|upper }}
+                                        </div>
+                                        {% endif %}
+                                        <strong>{{ item.student.name }}</strong>
+                                    </div>
+                                </td>
+                                <td>{{ item.student.father_name }}</td>
+                                <td>{{ item.student.mobile }}</td>
+                                <td>
+                                    <select name="status_{{ item.student.id }}" class="form-control attendance-select"
+                                        style="padding: 0.5rem; font-size: 0.9rem;" data-status="{{ item.status }}">
+                                        <option value="">-- Select --</option>
+                                        <option value="Present">✅ Present</option>
+                                        <option value="Absent">❌ Absent</option>
+                                        <option value="Leave">📝 Leave</option>
+                                        <option value="Half Day">⏰ Half Day</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">No students found in your class</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if students_with_attendance %}
+                <div class="flex gap-2" style="margin-top: 1rem; justify-content: space-between; flex-wrap: wrap;">
+                    <div class="flex gap-2">
+                        <button type="button" class="btn btn-success" onclick="markAll('Present')">Mark All
+                            Present</button>
+                        <button type="button" class="btn btn-danger" onclick="markAll('Absent')">Mark All
+                            Absent</button>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="min-width: 180px;">
+                        💾 Save Attendance
+                    </button>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+        {% else %}
+        <div class="card" style="text-align: center; padding: 3rem;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">🎓</div>
+            <h2>No Class Assigned</h2>
+            <p class="text-muted">You are not assigned as a class teacher to any class. Please contact the administrator
+                to assign a class.</p>
+        </div>
+        {% endif %}
+    </main>
+</div>
+
+<script>
+    // Set initial selected values from data-status
+    document.querySelectorAll('.attendance-select').forEach(select => {
+        const status = select.getAttribute('data-status');
+        if (status) {
+            select.value = status;
+        }
+    });
+
+    function markAll(status) {
+        document.querySelectorAll('.attendance-select').forEach(select => {
+            select.value = status;
+        });
+    }
+</script>
+{% endblock %}

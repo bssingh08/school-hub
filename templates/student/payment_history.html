@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Payment History - Shiv Shakti Public School{% endblock %}
+{% block body %}
+<div class="dashboard-layout">
+    <aside class="sidebar" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
+        <div class="sidebar-brand">
+            <div class="brand-icon">🎓</div>
+            <div>
+                <h2>Student Portal</h2>
+            </div>
+        </div>
+        <nav>
+            <ul class="sidebar-nav">
+                <li class="nav-item"><a href="{% url 'student_dashboard' %}" class="nav-link"><span
+                            class="icon">📊</span> Dashboard</a></li>
+                <li class="nav-item"><a href="{% url 'student_payment_history' %}" class="nav-link active"><span
+                            class="icon">💰</span> Payment History</a></li>
+                <li class="nav-item"><a href="{% url 'student_profile' %}" class="nav-link"><span class="icon">👤</span>
+                        My Profile</a></li>
+                <li class="nav-item" style="margin-top: 2rem;"><a href="{% url 'logout' %}" class="nav-link"><span
+                            class="icon">🚪</span> Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+    <main class="main-content">
+        <div class="top-header">
+            <h1 class="page-title">💰 Payment History</h1>
+        </div>
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Month/Year</th>
+                        <th>Paid Amount</th>
+                        <th>Due Amount</th>
+                        <th>Mode</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in payments %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ payment.month }} {{ payment.year }}</td>
+                        <td class="text-success">₹{{ payment.paid_amount }}</td>
+                        <td class="text-danger">₹{{ payment.due_amount }}</td>
+                        <td>{{ payment.payment_mode }}</td>
+                        <td>{{ payment.payment_date }}</td>
+                        <td><span
+                                class="badge badge-{% if payment.status == 'Paid' %}success{% else %}warning{% endif %}">{{
+                                payment.status }}</span></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted p-4">No payment records found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+{% endblock %}

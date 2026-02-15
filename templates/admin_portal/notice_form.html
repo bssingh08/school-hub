@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Create Notice - Shiv Shakti Public School{% endblock %}
+{% block body %}
+<div class="dashboard-layout">
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">🏫</div>
+            <div>
+                <h2>Shiv Shakti Public School</h2>
+            </div>
+        </div>
+        <nav>
+            <ul class="sidebar-nav">
+                <li class="nav-item"><a href="{% url 'admin_dashboard' %}" class="nav-link"><span class="icon">📊</span>
+                        Dashboard</a></li>
+                <li class="nav-item"><a href="{% url 'notice_list' %}" class="nav-link active"><span
+                            class="icon">📢</span> Notices</a></li>
+                <li class="nav-item" style="margin-top: 2rem;"><a href="{% url 'logout' %}" class="nav-link"><span
+                            class="icon">🚪</span> Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+    <main class="main-content">
+        <div class="top-header">
+            <h1 class="page-title">{{ title }}</h1><a href="{% url 'notice_list' %}" class="btn btn-outline">← Back</a>
+        </div>
+        <div class="card" style="max-width: 700px;">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group"><label class="form-label">Title *</label>{{ form.title }}</div>
+                <div class="form-group"><label class="form-label">Description *</label>{{ form.description }}</div>
+                <div class="grid-2">
+                    <div class="form-group"><label class="form-label">Category</label>{{ form.category }}</div>
+                    <div class="form-group"><label class="form-label">Priority</label>{{ form.priority }}</div>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group"><label class="form-label">Issued By</label>{{ form.issued_by }}</div>
+                    <div class="form-group"><label class="form-label">Audience</label>{{ form.audience }}</div>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group"><label class="form-label">Valid Until</label>{{ form.valid_until }}</div>
+                    <div class="form-group"><label class="form-label">Attachment</label>{{ form.file }}</div>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Notice</button>
+            </form>
+        </div>
+    </main>
+</div>
+{% endblock %}
