@@ -15,7 +15,7 @@ SECRET_KEY = 'django-insecure-(5w%d1g^st1z2^#ov6dzmmu%qdq63o-#x#)z0ly&g^_5afp@-u
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '*']
+ALLOWED_HOSTS = ['bssinghpvt.pythonanywhere.com', 'localhost', '127.0.0.1']
 
 # Application definition
 INSTALLED_APPS = [
@@ -84,7 +84,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Media files (Uploads)
 MEDIA_URL = '/media/'
