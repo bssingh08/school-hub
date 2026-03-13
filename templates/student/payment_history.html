@@ -37,6 +37,7 @@
                         <th>Mode</th>
                         <th>Date</th>
                         <th>Status</th>
+                        <th>Receipt</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -48,9 +49,18 @@
                         <td class="text-danger">₹{{ payment.due_amount }}</td>
                         <td>{{ payment.payment_mode }}</td>
                         <td>{{ payment.payment_date }}</td>
-                        <td><span
-                                class="badge badge-{% if payment.status == 'Paid' %}success{% else %}warning{% endif %}">{{
-                                payment.status }}</span></td>
+                        <td>
+                            {% if payment.status == 'Paid' %}
+                            <span class="badge badge-success">Paid</span>
+                            {% else %}
+                            <span class="badge badge-warning">{{ payment.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'fee_receipt' payment.pk %}" class="btn btn-sm btn-outline"
+                                style="background-color: #f1f8ff; border-color: #0366d6; color: #0366d6;"
+                                title="Download Receipt">🧾 Receipt</a>
+                        </td>
                     </tr>
                     {% empty %}
                     <tr>

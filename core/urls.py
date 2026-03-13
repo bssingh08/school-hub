@@ -29,6 +29,7 @@ urlpatterns = [
     path('admin/fees/', views.fee_collection, name='fee_collection'),
     path('admin/fees/add/', views.fee_add, name='fee_add'),
     path('admin/fees/<int:pk>/edit/', views.fee_edit, name='fee_edit'),
+    path('admin/fees/<int:pk>/receipt/', views.fee_receipt, name='fee_receipt'),
     
     # Salary Management (Admin)
     path('admin/salaries/', views.salary_management, name='salary_management'),

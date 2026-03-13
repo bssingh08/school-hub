@@ -387,6 +387,43 @@ def fee_edit(request, pk):
     return render(request, 'admin_portal/fee_form.html', {'form': form, 'title': 'Edit Fee Payment'})
 
 
+def fee_receipt(request, pk):
+    """Generate printable fee receipt PDF"""
+    user_type = request.session.get('user_type')
+    student_id = request.session.get('student_id')
+    
+    payment = get_object_or_404(StudentPayment, pk=pk)
+    
+    # Permission check: admin or the student themselves
+    if user_type == 'admin':
+        pass
+    elif user_type == 'student' and payment.student.id == student_id:
+        pass
+    else:
+        messages.error(request, 'Access denied')
+        if user_type == 'student':
+            return redirect('student_dashboard')
+        return redirect('admin_login')
+    
+    # Get general school information or create an empty one if not exists
+    school_info = SchoolInfo.objects.first()
+    if not school_info:
+        school_info = SchoolInfo.objects.create(
+            school_name='Shiv Shakti Public School',
+            address='Near Nagwati Asthan Kali Mandir, Barhiya',
+            contact_number='9973605904'
+        )
+        
+    context = {
+        'payment': payment,
+        'student': payment.student,
+        'school_info': school_info,
+        'receipt_no': f"REC-{payment.pk:05d}"
+    }
+    
+    return render(request, 'admin_portal/fee_receipt_pdf.html', context)
+
+
 # ===================== SALARY MANAGEMENT =====================
 
 def salary_management(request):

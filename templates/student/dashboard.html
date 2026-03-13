@@ -74,6 +74,7 @@
                                 <th>Month</th>
                                 <th>Amount</th>
                                 <th>Status</th>
+                                <th>Receipt</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -81,13 +82,21 @@
                             <tr>
                                 <td>{{ payment.month }} {{ payment.year }}</td>
                                 <td>₹{{ payment.paid_amount }}</td>
-                                <td><span
-                                        class="badge badge-{% if payment.status == 'Paid' %}success{% else %}warning{% endif %}">{{
-                                        payment.status }}</span></td>
+                                <td>
+                                    {% if payment.status == 'Paid' %}
+                                    <span class="badge badge-success">Paid</span>
+                                    {% else %}
+                                    <span class="badge badge-warning">{{ payment.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'fee_receipt' payment.pk %}" class="btn btn-sm btn-outline"
+                                        title="Download Receipt">🧾</a>
+                                </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="3" class="text-center text-muted">No payments yet</td>
+                                <td colspan="4" class="text-center text-muted">No payments yet</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -103,8 +112,9 @@
                 {% for notice in notices %}
                 <div style="padding: 0.75rem; border-bottom: 1px solid var(--gray-100);">
                     <strong>{{ notice.title }}</strong>
-                    <p class="text-muted" style="font-size: 0.875rem; margin: 0.25rem 0;">{{
-                        notice.description|truncatechars:100 }}</p>
+                    <p class="text-muted" style="font-size: 0.875rem; margin: 0.25rem 0;">
+                        {{ notice.description|truncatechars:100 }}
+                    </p>
                     <small class="text-muted">{{ notice.notice_date }}</small>
                 </div>
                 {% empty %}
@@ -137,10 +147,15 @@
                             <td>{{ result.marks_obtained }} / {{ result.total_marks }} ({{
                                 result.percentage|floatformat:1 }}%)</td>
                             <td>
-                                <span class="badge"
-                                    style="background: {% if result.grade == 'A+' or result.grade == 'A' %}#10b981{% elif result.grade == 'B+' or result.grade == 'B' %}#3b82f6{% elif result.grade == 'C' %}#f59e0b{% else %}#ef4444{% endif %}; color: white;">
-                                    {{ result.grade }}
-                                </span>
+                                {% if result.grade == 'A+' or result.grade == 'A' %}
+                                <span class="badge badge-success">{{ result.grade }}</span>
+                                {% elif result.grade == 'B+' or result.grade == 'B' %}
+                                <span class="badge badge-info">{{ result.grade }}</span>
+                                {% elif result.grade == 'C' %}
+                                <span class="badge badge-warning">{{ result.grade }}</span>
+                                {% else %}
+                                <span class="badge badge-danger">{{ result.grade }}</span>
+                                {% endif %}
                             </td>
                             <td>{{ result.exam_date|date:"M d, Y" }}</td>
                         </tr>

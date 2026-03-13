@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}{{ school_info.school_name }} - Welcome{% endblock %}
 
@@ -599,7 +600,9 @@
 <!-- Hero Section -->
 <section class="hero">
     <div class="hero-content">
-        <div class="school-logo">🏫</div>
+        <div class="school-logo"><img src="{% static 'images/logo.jpg' %}" alt="School Logo"
+                style="width: 150px; height: 150px; border-radius: 50%; box-shadow: 0 10px 25px rgba(0,0,0,0.3); object-fit: cover;">
+        </div>
         <h1>{{ school_info.school_name }}</h1>
         <p class="hero-subtitle">{{ school_info.motto }}</p>
         <p class="hero-info">📍 {{ school_info.address }}</p>
@@ -692,6 +695,62 @@
             </div>
         </div>
         {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- Results & Projects Section -->
+{% if recent_results %}
+<section class="results-section">
+    <div class="results-container">
+        <h2 class="section-title" style="color: white; margin-bottom: 3rem;">Recent Projects & Results</h2>
+        <div class="results-table-wrapper">
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Student Name</th>
+                        <th>Class</th>
+                        <th>Exam/Project</th>
+                        <th>Subject</th>
+                        <th>Grade</th>
+                        <th>Result PDF</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in recent_results %}
+                    <tr>
+                        <td>STD-{{ result.student.id|stringformat:"04d" }}</td>
+                        <td>{{ result.student.name }}</td>
+                        <td>{{ result.student.student_class }}</td>
+                        <td>{{ result.exam_name }}</td>
+                        <td>{{ result.subject.subject_name|default:"N/A" }}</td>
+                        <td>
+                            <span class="grade-badge 
+                                {% if result.grade == 'A+' %}grade-a-plus
+                                {% elif result.grade == 'A' %}grade-a
+                                {% elif result.grade == 'B+' %}grade-b-plus
+                                {% elif result.grade == 'B' %}grade-b
+                                {% else %}grade-c{% endif %}">
+                                {{ result.grade|default:"N/A" }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{% url 'result_pdf' result.student.id %}?exam={{ result.exam_name|urlencode }}"
+                                class="view-all-btn"
+                                style="padding: 0.5rem 1.5rem; margin-top: 0; font-size: 0.9rem;">Download PDF</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="{% url 'result_list' %}" class="view-all-btn"
+                    style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">View All Projects &
+                    Results</a>
+            </div>
+        </div>
     </div>
 </section>
 {% endif %}

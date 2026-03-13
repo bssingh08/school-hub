@@ -58,9 +58,15 @@
                         <td>{{ forloop.counter }}</td>
                         <td><strong>{{ notice.title }}</strong></td>
                         <td><span class="badge badge-info">{{ notice.category }}</span></td>
-                        <td><span
-                                class="badge badge-{% if notice.priority == 'High' %}danger{% elif notice.priority == 'Medium' %}warning{% else %}success{% endif %}">{{
-                                notice.priority }}</span></td>
+                        <td>
+                            {% if notice.priority == 'High' %}
+                            <span class="badge badge-danger">High</span>
+                            {% elif notice.priority == 'Medium' %}
+                            <span class="badge badge-warning">Medium</span>
+                            {% else %}
+                            <span class="badge badge-success">{{ notice.priority }}</span>
+                            {% endif %}
+                        </td>
                         <td>{{ notice.audience }}</td>
                         <td>{{ notice.notice_date }}</td>
                         <td><a href="{% url 'notice_delete' notice.pk %}" class="btn btn-sm btn-danger"

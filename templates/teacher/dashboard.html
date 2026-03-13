@@ -96,9 +96,13 @@
                             <tr>
                                 <td>{{ payment.month }} {{ payment.year }}</td>
                                 <td>₹{{ payment.paid_amount }}</td>
-                                <td><span
-                                        class="badge badge-{% if payment.status == 'Paid' %}success{% else %}warning{% endif %}">{{
-                                        payment.status }}</span></td>
+                                <td>
+                                    {% if payment.status == 'Paid' %}
+                                    <span class="badge badge-success">Paid</span>
+                                    {% else %}
+                                    <span class="badge badge-warning">{{ payment.status }}</span>
+                                    {% endif %}
+                                </td>
                             </tr>
                             {% empty %}
                             <tr>
@@ -118,8 +122,9 @@
                 {% for notice in notices %}
                 <div style="padding: 0.75rem; border-bottom: 1px solid var(--gray-100);">
                     <strong>{{ notice.title }}</strong>
-                    <p class="text-muted" style="font-size: 0.875rem; margin: 0.25rem 0;">{{
-                        notice.description|truncatechars:100 }}</p>
+                    <p class="text-muted" style="font-size: 0.875rem; margin: 0.25rem 0;">
+                        {{ notice.description|truncatechars:100 }}
+                    </p>
                     <small class="text-muted">{{ notice.notice_date }}</small>
                 </div>
                 {% empty %}

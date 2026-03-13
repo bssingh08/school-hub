@@ -50,9 +50,23 @@
                 <label class="form-label" style="margin: 0;">Filter:</label>
                 <select name="status" class="form-input" style="width: auto;">
                     <option value="">All Status</option>
-                    <option value="Paid" {% if selected_status == 'Paid' %}selected{% endif %}>Paid</option>
-                    <option value="Pending" {% if selected_status == 'Pending' %}selected{% endif %}>Pending</option>
-                    <option value="Partial" {% if selected_status == 'Partial' %}selected{% endif %}>Partial</option>
+                    {% if selected_status == 'Paid' %}
+                    <option value="Paid" selected>Paid</option>
+                    {% else %}
+                    <option value="Paid">Paid</option>
+                    {% endif %}
+
+                    {% if selected_status == 'Pending' %}
+                    <option value="Pending" selected>Pending</option>
+                    {% else %}
+                    <option value="Pending">Pending</option>
+                    {% endif %}
+
+                    {% if selected_status == 'Partial' %}
+                    <option value="Partial" selected>Partial</option>
+                    {% else %}
+                    <option value="Partial">Partial</option>
+                    {% endif %}
                 </select>
                 <button type="submit" class="btn btn-outline btn-sm">Filter</button>
             </form>
@@ -83,10 +97,22 @@
                         <td class="text-danger">₹{{ payment.due_amount }}</td>
                         <td>{{ payment.payment_mode }}</td>
                         <td>{{ payment.payment_date }}</td>
-                        <td><span
-                                class="badge badge-{% if payment.status == 'Paid' %}success{% elif payment.status == 'Pending' %}warning{% else %}info{% endif %}">{{
-                                payment.status }}</span></td>
-                        <td><a href="{% url 'fee_edit' payment.pk %}" class="btn btn-sm btn-outline">Edit</a></td>
+                        <td>
+                            {% if payment.status == 'Paid' %}
+                            <span class="badge badge-success">Paid</span>
+                            {% elif payment.status == 'Pending' %}
+                            <span class="badge badge-warning">Pending</span>
+                            {% else %}
+                            <span class="badge badge-info">{{ payment.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'fee_receipt' payment.pk %}" class="btn btn-sm btn-outline"
+                                style="background-color: #f1f8ff; border-color: #0366d6; color: #0366d6; margin-right: 5px;"
+                                title="View Receipt">🧾</a>
+                            <a href="{% url 'fee_edit' payment.pk %}" class="btn btn-sm btn-outline"
+                                title="Edit Payment">✏️</a>
+                        </td>
                     </tr>
                     {% empty %}
                     <tr>
