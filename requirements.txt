@@ -18,6 +18,3 @@ Pillow==11.2.1
 
 # Timezone
 tzdata==2025.2
-
-# PDF Generation (if used)
-xhtml2pdf==0.2.17

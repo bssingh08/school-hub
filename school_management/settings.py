@@ -23,8 +23,15 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     'bssinghpvt.pythonanywhere.com',
-    '.railway.app',       # Railway deployment
-    '.up.railway.app',    # Railway public domains
+    '.railway.app',
+    '.up.railway.app',
+]
+
+# CSRF settings for production
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.railway.app',
+    'https://*.up.railway.app',
+    'https://bssinghpvt.pythonanywhere.com',
 ]
 
 # Allow all hosts in production when RAILWAY_ENVIRONMENT is set
