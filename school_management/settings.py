@@ -25,6 +25,8 @@ ALLOWED_HOSTS = [
     'bssinghpvt.pythonanywhere.com',
     '.railway.app',
     '.up.railway.app',
+    'shivshaktischool.online',
+    'www.shivshaktischool.online'
 ]
 
 # CSRF settings for production
