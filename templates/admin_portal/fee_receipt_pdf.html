@@ -380,6 +380,12 @@
                     </tr>
                 </tbody>
             </table>
+
+            {% if payment.remarks %}
+            <div style="margin-top: 15px; padding: 12px; background-color: #f8f9fc; border-left: 3px solid #059669; font-size: 0.9rem;">
+                <strong style="color: #666;">Remarks:</strong> {{ payment.remarks }}
+            </div>
+            {% endif %}
         </div>
 
         <!-- Signatures -->
