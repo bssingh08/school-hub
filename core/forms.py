@@ -1,5 +1,17 @@
 from django import forms
-from .models import Admin, Teacher, Student, TeacherPayment, StudentPayment, Notice, Event, SchoolClass, Subject
+from .models import Admin, Teacher, Student, TeacherPayment, StudentPayment, Notice, Event, SchoolClass, Subject, FeeStructure
+
+
+class FeeStructureForm(forms.ModelForm):
+    """Form for creating/editing fee structure"""
+    class Meta:
+        model = FeeStructure
+        fields = ['school_class', 'class_fee', 'transport_charge']
+        widgets = {
+            'school_class': forms.Select(attrs={'class': 'form-input'}),
+            'class_fee': forms.NumberInput(attrs={'class': 'form-input', 'placeholder': 'e.g. 1500'}),
+            'transport_charge': forms.NumberInput(attrs={'class': 'form-input', 'placeholder': 'e.g. 500'}),
+        }
 
 
 class LoginForm(forms.Form):
@@ -20,7 +32,7 @@ class AdminForm(forms.ModelForm):
     
     class Meta:
         model = Admin
-        fields = ['name', 'email', 'phone', 'address', 'role', 'photo']
+        fields = ['name', 'email', 'phone', 'address', 'role']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-input'}),
             'email': forms.EmailInput(attrs={'class': 'form-input'}),
@@ -38,7 +50,7 @@ class TeacherForm(forms.ModelForm):
         model = Teacher
         fields = ['name', 'father_name', 'email', 'mobile', 'address', 'aadhar_no', 
                   'qualification', 'role', 'joining_date', 'subjects', 'class_section', 
-                  'monthly_salary', 'photo', 'is_active']
+                  'monthly_salary', 'is_active']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-input'}),
             'father_name': forms.TextInput(attrs={'class': 'form-input'}),
@@ -62,7 +74,7 @@ class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
         fields = ['name', 'father_name', 'student_class', 'address', 'email', 
-                  'mobile', 'admission_date', 'monthly_fee', 'photo', 'is_active']
+                  'mobile', 'admission_date', 'monthly_fee', 'is_active']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-input'}),
             'father_name': forms.TextInput(attrs={'class': 'form-input'}),
@@ -118,7 +130,7 @@ class NoticeForm(forms.ModelForm):
     class Meta:
         model = Notice
         fields = ['title', 'description', 'category', 'issued_by', 'priority', 
-                  'valid_until', 'audience', 'file']
+                  'valid_until', 'audience']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-input'}),
             'description': forms.Textarea(attrs={'class': 'form-input', 'rows': 4}),

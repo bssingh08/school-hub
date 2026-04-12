@@ -285,7 +285,9 @@
                 <div class="card-content">
                     <div class="photo-frame">
                         {% if student.photo %}
-                        <img src="{{ student.photo.url }}" alt="{{ student.name }}">
+                        <img src="{% url 'serve_image' 'student' student.pk %}" alt="{{ student.name }}"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div class="photo-placeholder" style="display:none;">👤</div>
                         {% else %}
                         <div class="photo-placeholder">👤</div>
                         {% endif %}

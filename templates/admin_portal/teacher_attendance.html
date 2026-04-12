@@ -171,8 +171,12 @@
                                 <td>
                                     <div class="flex gap-2" style="align-items: center;">
                                         {% if item.teacher.photo %}
-                                        <img src="{{ item.teacher.photo.url }}" alt="{{ item.teacher.name }}" 
-                                             style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                                        <img src="{% url 'serve_image' 'teacher' item.teacher.pk %}" alt="{{ item.teacher.name }}" 
+                                             style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
+                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                        <div style="display:none; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); align-items: center; justify-content: center; color: white; font-weight: 600;">
+                                            {{ item.teacher.name|slice:":1"|upper }}
+                                        </div>
                                         {% else %}
                                         <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
                                             {{ item.teacher.name|slice:":1"|upper }}

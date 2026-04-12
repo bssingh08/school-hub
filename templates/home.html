@@ -688,7 +688,7 @@
     <div class="gallery-grid">
         {% for image in gallery_images %}
         <div class="gallery-item">
-            <img src="{{ image.image.url }}" alt="{{ image.title }}">
+            <img src="{% url 'serve_image' 'gallery' image.pk %}" alt="{{ image.title }}">
             <div class="gallery-overlay">
                 <h4>{{ image.title }}</h4>
                 <p>{{ image.category }}</p>

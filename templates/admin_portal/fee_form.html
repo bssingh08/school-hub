@@ -2,6 +2,47 @@
 
 {% block title %}{{ title }} - Shiv Shakti Public School{% endblock %}
 
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const studentSelect = document.querySelector('select[name="student"]');
+    const paidAmountInput = document.querySelector('input[name="paid_amount"]');
+    const dueAmountInput = document.querySelector('input[name="due_amount"]');
+
+    if (studentSelect && paidAmountInput) {
+        studentSelect.addEventListener('change', function() {
+            const studentId = this.value;
+            if (studentId) {
+                fetch(`/api/get-student-details/${studentId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const totalFee = (data.monthly_fee || 0) + (data.transport_charge || 0);
+                            paidAmountInput.value = totalFee;
+                            
+                            // Initialize month and year for convenience
+                            const now = new Date();
+                            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                            
+                            const monthInput = document.querySelector('input[name="month"]');
+                            const yearInput = document.querySelector('input[name="year"]');
+                            
+                            if (monthInput && !monthInput.value) {
+                                monthInput.value = months[now.getMonth()];
+                            }
+                            if (yearInput && !yearInput.value) {
+                                yearInput.value = now.getFullYear();
+                            }
+                        }
+                    })
+                    .catch(error => console.error('Error fetching student details:', error));
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
+
 {% block body %}
 <div class="dashboard-layout">
     <aside class="sidebar">

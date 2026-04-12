@@ -2,16 +2,53 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db.models import Sum, Count
 from django.utils import timezone
+from django.http import JsonResponse, HttpResponse
 from decimal import Decimal
 from .models import (
     Admin, Teacher, Student, SchoolClass, Subject,
     TeacherPayment, StudentPayment, TeacherAttendance, StudentAttendance,
-    Notice, Event, Exam, SchoolInfo, GalleryImage, Result
+    Notice, Event, Exam, SchoolInfo, GalleryImage, Result, FeeStructure
 )
 from .forms import (
     LoginForm, TeacherForm, StudentForm, TeacherPaymentForm, 
-    StudentPaymentForm, NoticeForm, ClassForm, SubjectForm
+    StudentPaymentForm, NoticeForm, ClassForm, SubjectForm, FeeStructureForm
 )
+
+
+# ===================== BINARY IMAGE SERVING =====================
+
+def serve_image(request, model_type, pk):
+    """Serve a binary image stored in the database with auto content-type detection"""
+    data = None
+    if model_type == 'student':
+        obj = get_object_or_404(Student, pk=pk)
+        data = obj.photo
+    elif model_type == 'teacher':
+        obj = get_object_or_404(Teacher, pk=pk)
+        data = obj.photo
+    elif model_type == 'gallery':
+        obj = get_object_or_404(GalleryImage, pk=pk)
+        data = obj.image
+    elif model_type == 'school_logo':
+        obj = SchoolInfo.objects.first()
+        data = obj.logo if obj else None
+
+    if data:
+        image_bytes = bytes(data)
+        # Detect content type from image magic bytes
+        if len(image_bytes) > 3 and image_bytes[:3] == b'\xff\xd8\xff':
+            content_type = 'image/jpeg'
+        elif len(image_bytes) > 8 and image_bytes[:8] == b'\x89PNG\r\n\x1a\n':
+            content_type = 'image/png'
+        elif len(image_bytes) > 6 and image_bytes[:6] in (b'GIF87a', b'GIF89a'):
+            content_type = 'image/gif'
+        elif len(image_bytes) > 12 and image_bytes[:4] == b'RIFF' and image_bytes[8:12] == b'WEBP':
+            content_type = 'image/webp'
+        else:
+            # Not valid image data — old file path string stored as bytes after migration
+            return HttpResponse(status=404)
+        return HttpResponse(image_bytes, content_type=content_type)
+    return HttpResponse(status=404)
 
 
 # ===================== HOME & AUTH =====================
@@ -199,12 +236,14 @@ def student_add(request):
         return redirect('admin_login')
     
     if request.method == 'POST':
-        form = StudentForm(request.POST, request.FILES)
+        form = StudentForm(request.POST)
         if form.is_valid():
             student = form.save(commit=False)
             password = request.POST.get('password')
             if password:
                 student.set_password(password)
+            if 'photo' in request.FILES:
+                student.photo = request.FILES['photo'].read()
             student.save()
             messages.success(request, f'Student {student.name} added successfully')
             return redirect('student_list')
@@ -222,12 +261,14 @@ def student_edit(request, pk):
     student = get_object_or_404(Student, pk=pk)
     
     if request.method == 'POST':
-        form = StudentForm(request.POST, request.FILES, instance=student)
+        form = StudentForm(request.POST, instance=student)
         if form.is_valid():
             student = form.save(commit=False)
             password = request.POST.get('password')
             if password:
                 student.set_password(password)
+            if 'photo' in request.FILES:
+                student.photo = request.FILES['photo'].read()
             student.save()
             messages.success(request, f'Student {student.name} updated successfully')
             return redirect('student_list')
@@ -274,7 +315,7 @@ def teacher_add(request):
         return redirect('admin_login')
     
     if request.method == 'POST':
-        form = TeacherForm(request.POST, request.FILES)
+        form = TeacherForm(request.POST)
         if form.is_valid():
             password = request.POST.get('password')
             if not password:
@@ -283,6 +324,8 @@ def teacher_add(request):
             
             teacher = form.save(commit=False)
             teacher.set_password(password)
+            if 'photo' in request.FILES:
+                teacher.photo = request.FILES['photo'].read()
             teacher.save()
             form.save_m2m()  # Save many-to-many relationships
             messages.success(request, f'Teacher {teacher.name} added successfully')
@@ -303,12 +346,14 @@ def teacher_edit(request, pk):
     teacher = get_object_or_404(Teacher, pk=pk)
     
     if request.method == 'POST':
-        form = TeacherForm(request.POST, request.FILES, instance=teacher)
+        form = TeacherForm(request.POST, instance=teacher)
         if form.is_valid():
             teacher = form.save(commit=False)
             password = request.POST.get('password')
             if password:
                 teacher.set_password(password)
+            if 'photo' in request.FILES:
+                teacher.photo = request.FILES['photo'].read()
             teacher.save()
             form.save_m2m()
             messages.success(request, f'Teacher {teacher.name} updated successfully')
@@ -584,9 +629,12 @@ def notice_add(request):
         return redirect('admin_login')
     
     if request.method == 'POST':
-        form = NoticeForm(request.POST, request.FILES)
+        form = NoticeForm(request.POST)
         if form.is_valid():
-            form.save()
+            notice = form.save(commit=False)
+            if 'file' in request.FILES:
+                notice.file = request.FILES['file'].read()
+            notice.save()
             messages.success(request, 'Notice created successfully')
             return redirect('notice_list')
     else:
@@ -643,6 +691,111 @@ def class_delete(request, pk):
     school_class.delete()
     messages.success(request, 'Class deleted successfully')
     return redirect('class_list')
+
+
+# ===================== FEE STRUCTURE MANAGEMENT =====================
+
+def fee_structure_list(request):
+    """List all fee structures"""
+    if request.session.get('user_type') != 'admin':
+        return redirect('admin_login')
+    
+    structures = FeeStructure.objects.all().select_related('school_class')
+    return render(request, 'admin_portal/fee_structure_list.html', {'structures': structures})
+
+
+def fee_structure_add(request):
+    """Add new fee structure"""
+    if request.session.get('user_type') != 'admin':
+        return redirect('admin_login')
+    
+    if request.method == 'POST':
+        form = FeeStructureForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Fee structure added successfully')
+            return redirect('fee_structure_list')
+    else:
+        form = FeeStructureForm()
+    
+    return render(request, 'admin_portal/fee_structure_form.html', {'form': form, 'title': 'Add Fee Structure'})
+
+
+def fee_structure_edit(request, pk):
+    """Edit fee structure"""
+    if request.session.get('user_type') != 'admin':
+        return redirect('admin_login')
+    
+    structure = get_object_or_404(FeeStructure, pk=pk)
+    
+    if request.method == 'POST':
+        form = FeeStructureForm(request.POST, instance=structure)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Fee structure updated successfully')
+            return redirect('fee_structure_list')
+    else:
+        form = FeeStructureForm(instance=structure)
+    
+    return render(request, 'admin_portal/fee_structure_form.html', {'form': form, 'title': 'Edit Fee Structure'})
+
+
+def fee_structure_delete(request, pk):
+    """Delete fee structure"""
+    if request.session.get('user_type') != 'admin':
+        return redirect('admin_login')
+    
+    structure = get_object_or_404(FeeStructure, pk=pk)
+    structure.delete()
+    messages.success(request, 'Fee structure deleted successfully')
+    return redirect('fee_structure_list')
+
+
+# ===================== API FOR AJAX =====================
+
+from django.http import JsonResponse
+
+def get_class_fees(request, class_id):
+    """API endpoint to get fees for a class"""
+    try:
+        structure = FeeStructure.objects.get(school_class_id=class_id)
+        return JsonResponse({
+            'success': True,
+            'class_fee': float(structure.class_fee),
+            'transport_charge': float(structure.transport_charge)
+        })
+    except FeeStructure.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'No fee structure defined for this class'
+        })
+
+
+def get_student_details(request, student_id):
+    """API endpoint to get student details including their class fees"""
+    try:
+        student = Student.objects.get(id=student_id)
+        data = {
+            'success': True,
+            'student_name': student.name,
+            'class_id': student.student_class.id if student.student_class else None,
+            'monthly_fee': float(student.monthly_fee)
+        }
+        
+        # Get transport charge from class fee structure if available
+        if student.student_class:
+            try:
+                structure = FeeStructure.objects.get(school_class=student.student_class)
+                data['transport_charge'] = float(structure.transport_charge)
+            except FeeStructure.DoesNotExist:
+                data['transport_charge'] = 0
+        
+        return JsonResponse(data)
+    except Student.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'Student not found'
+        })
 
 
 # ===================== STUDENT PORTAL =====================
@@ -1220,15 +1373,15 @@ def gallery_add(request):
         title = request.POST.get('title')
         category = request.POST.get('category')
         description = request.POST.get('description', '')
-        image = request.FILES.get('image')
+        image_file = request.FILES.get('image')
         display_order = request.POST.get('display_order', 0)
         
-        if title and image:
+        if title and image_file:
             GalleryImage.objects.create(
                 title=title,
                 category=category,
                 description=description,
-                image=image,
+                image=image_file.read(),
                 display_order=int(display_order)
             )
             messages.success(request, 'Gallery image added successfully')

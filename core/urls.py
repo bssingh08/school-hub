@@ -8,6 +8,9 @@ urlpatterns = [
     path('teacher-login/', views.teacher_login, name='teacher_login'),
     path('student-login/', views.student_login, name='student_login'),
     path('logout/', views.logout, name='logout'),
+
+    # Binary Image Serving
+    path('serve-image/<str:model_type>/<int:pk>/', views.serve_image, name='serve_image'),
     
     # Admin Dashboard
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
@@ -45,6 +48,16 @@ urlpatterns = [
     path('admin/classes/', views.class_list, name='class_list'),
     path('admin/classes/add/', views.class_add, name='class_add'),
     path('admin/classes/<int:pk>/delete/', views.class_delete, name='class_delete'),
+    
+    # Fee Structure Management (Admin)
+    path('admin/fee-structure/', views.fee_structure_list, name='fee_structure_list'),
+    path('admin/fee-structure/add/', views.fee_structure_add, name='fee_structure_add'),
+    path('admin/fee-structure/<int:pk>/edit/', views.fee_structure_edit, name='fee_structure_edit'),
+    path('admin/fee-structure/<int:pk>/delete/', views.fee_structure_delete, name='fee_structure_delete'),
+    
+    # API for AJAX
+    path('api/get-class-fees/<int:class_id>/', views.get_class_fees, name='get_class_fees'),
+    path('api/get-student-details/<int:student_id>/', views.get_student_details, name='get_student_details'),
     
     # Teacher Attendance Management (Admin)
     path('admin/teacher-attendance/', views.teacher_attendance_list, name='teacher_attendance_list'),

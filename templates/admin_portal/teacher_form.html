@@ -137,7 +137,15 @@
                 <div class="grid-2">
                     <div class="form-group">
                         <label class="form-label">Photo</label>
-                        {{ form.photo }}
+                        <input type="file" name="photo" accept="image/*" class="form-input">
+                        {% if teacher and teacher.photo %}
+                        <div style="margin-top: 0.5rem;">
+                            <img src="{% url 'serve_image' 'teacher' teacher.pk %}" alt="Current Photo"
+                                 style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;"
+                                 onerror="this.parentNode.style.display='none';">
+                            <small class="text-muted" style="display:block;">Photo already uploaded. Upload new to replace.</small>
+                        </div>
+                        {% endif %}
                     </div>
                     <div class="form-group">
                         <label class="form-label">Status</label>
