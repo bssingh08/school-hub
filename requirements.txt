@@ -1,20 +1,20 @@
+# Core Django
+Django==5.1.7
 asgiref==3.9.1
-comtypes==1.4.15
-distlib==0.4.0
-dj-database-url==3.1.0
-Django==6.0.2
-filelock==3.20.1
-my-app==0.1.0
-pillow==12.1.1
-platformdirs==4.5.1
-psycopg2-binary==2.9.11
-pygame==2.6.1
-pyjokes==0.8.3
-pypiwin32==223
-pyttsx3==2.99
-pytz==2025.2
-pywin32==311
 sqlparse==0.5.3
+
+# Database
+dj-database-url==2.3.0
+psycopg2-binary==2.9.10
+
+# Production Server
+gunicorn==23.0.0
+
+# Static Files
+whitenoise==6.9.0
+
+# Image Handling
+Pillow==11.2.1
+
+# Timezone
 tzdata==2025.2
-virtualenv==20.35.4
-whitenoise==6.11.0
