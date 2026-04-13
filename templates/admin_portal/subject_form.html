@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Add Subject - Shiv Shakti Public School{% endblock %}
+{% block body %}
+<div class="dashboard-layout">
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">🏫</div>
+            <div>
+                <h2>Shiv Shakti Public School</h2>
+            </div>
+        </div>
+        <nav>
+            <ul class="sidebar-nav">
+                <li class="nav-item"><a href="{% url 'admin_dashboard' %}" class="nav-link"><span class="icon">📊</span>
+                        Dashboard</a></li>
+                <li class="nav-item"><a href="{% url 'subject_list' %}" class="nav-link active"><span
+                            class="icon">📚</span> Subjects</a></li>
+                <li class="nav-item" style="margin-top: 2rem;"><a href="{% url 'logout' %}" class="nav-link"><span
+                            class="icon">🚪</span> Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+    <main class="main-content">
+        <div class="top-header">
+            <h1 class="page-title">{{ title }}</h1>
+            <a href="{% url 'subject_list' %}" class="btn btn-outline">← Back</a>
+        </div>
+        <div class="card" style="max-width: 500px;">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label class="form-label">Subject Name *</label>
+                    {{ form.subject_name }}
+                    {% if form.subject_name.errors %}
+                        <div class="text-danger small">{{ form.subject_name.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Subject Code *</label>
+                    {{ form.subject_code }}
+                    {% if form.subject_code.errors %}
+                        <div class="text-danger small">{{ form.subject_code.errors }}</div>
+                    {% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary">Save Subject</button>
+            </form>
+        </div>
+    </main>
+</div>
+{% endblock %}

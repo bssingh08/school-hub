@@ -39,6 +39,11 @@
                         <span class="icon">🏛️</span> Classes
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{% url 'subject_list' %}" class="nav-link">
+                        <span class="icon">📚</span> Subjects
+                    </a>
+                </li>
 
                 <span class="nav-section-title">Attendance</span>
                 <li class="nav-item">
@@ -279,6 +284,7 @@
             <div class="flex gap-2" style="flex-wrap: wrap;">
                 <a href="{% url 'student_add' %}" class="btn btn-primary">➕ Add Student</a>
                 <a href="{% url 'teacher_add' %}" class="btn btn-success">➕ Add Teacher</a>
+                <a href="{% url 'subject_add' %}" class="btn btn-warning">📚 Add Subject</a>
                 <a href="{% url 'teacher_attendance_list' %}" class="btn btn-info">📋 Mark Attendance</a>
                 <a href="{% url 'fee_add' %}" class="btn btn-warning">💰 Collect Fee</a>
                 <a href="{% url 'salary_add' %}" class="btn btn-danger">💵 Pay Salary</a>

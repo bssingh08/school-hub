@@ -751,6 +751,46 @@ def fee_structure_delete(request, pk):
     return redirect('fee_structure_list')
 
 
+# ===================== SUBJECT MANAGEMENT =====================
+
+def subject_list(request):
+    """List all subjects"""
+    if request.session.get('user_type') != 'admin':
+        return redirect('admin_login')
+    
+    subjects = Subject.objects.all().order_by('subject_name')
+    return render(request, 'admin_portal/subject_list.html', {'subjects': subjects})
+
+
+def subject_add(request):
+    """Add new subject"""
+    if request.session.get('user_type') != 'admin':
+        return redirect('admin_login')
+    
+    if request.method == 'POST':
+        form = SubjectForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Subject added successfully')
+            return redirect('subject_list')
+    else:
+        form = SubjectForm()
+    
+    return render(request, 'admin_portal/subject_form.html', {'form': form, 'title': 'Add Subject'})
+
+
+def subject_delete(request, pk):
+    """Delete subject"""
+    if request.session.get('user_type') != 'admin':
+        return redirect('admin_login')
+    
+    subject = get_object_or_404(Subject, pk=pk)
+    subject_name = subject.subject_name
+    subject.delete()
+    messages.success(request, f'Subject "{subject_name}" deleted successfully')
+    return redirect('subject_list')
+
+
 # ===================== API FOR AJAX =====================
 
 from django.http import JsonResponse

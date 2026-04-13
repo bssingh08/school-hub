@@ -55,6 +55,11 @@ urlpatterns = [
     path('admin/fee-structure/<int:pk>/edit/', views.fee_structure_edit, name='fee_structure_edit'),
     path('admin/fee-structure/<int:pk>/delete/', views.fee_structure_delete, name='fee_structure_delete'),
     
+    # Subject Management (Admin)
+    path('admin/subjects/', views.subject_list, name='subject_list'),
+    path('admin/subjects/add/', views.subject_add, name='subject_add'),
+    path('admin/subjects/<int:pk>/delete/', views.subject_delete, name='subject_delete'),
+    
     # API for AJAX
     path('api/get-class-fees/<int:class_id>/', views.get_class_fees, name='get_class_fees'),
     path('api/get-student-details/<int:student_id>/', views.get_student_details, name='get_student_details'),
